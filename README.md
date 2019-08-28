@@ -1,3 +1,4 @@
-# stib
+# Stib
+# React Native App
 
-Brussels Public Transport Real Time Information
+Add any Brussels Public Transport and follow it in real time.
