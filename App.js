@@ -11,9 +11,11 @@ import {StyleSheet, View, PermissionsAndroid, Dimensions} from 'react-native';
 
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import {FloatingAction} from 'react-native-floating-action';
+import ModalAdd from './Components/Modal/ModalAdd';
 
 const App = () => {
   const [marginBottom, setMarginBottom] = useState(1);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     // Geolocation.getCurrentPosition(info => alert(info));
@@ -68,9 +70,10 @@ const App = () => {
       <FloatingAction
         actions={actions}
         onPressItem={name => {
-          alert(`selected button: ${name}`);
+          if (name === 'addLine') setModalVisible(true);
         }}
       />
+      <ModalAdd visible={modalVisible} setModalVisible={setModalVisible} />
     </View>
   );
 };
