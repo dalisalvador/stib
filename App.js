@@ -7,16 +7,10 @@
  */
 
 import React, {Fragment, useState, useEffect} from 'react';
-import {
-  StyleSheet,
-  View,
-  PermissionsAndroid,
-  Dimensions,
-  Platform,
-  TouchableOpacity,
-} from 'react-native';
+import {StyleSheet, View, PermissionsAndroid, Dimensions} from 'react-native';
 
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+import {FloatingAction} from 'react-native-floating-action';
 
 const App = () => {
   const [marginBottom, setMarginBottom] = useState(1);
@@ -32,6 +26,25 @@ const App = () => {
       setMarginBottom(0);
     });
   };
+
+  const actions = [
+    {
+      text: 'Add Line',
+      icon: {
+        uri: 'https://www.flaticon.com/premium-icon/icons/svg/201/201531.svg',
+      },
+      name: 'addLine',
+      position: 1,
+    },
+    {
+      text: 'About',
+      icon: {
+        uri: 'https://www.flaticon.com/premium-icon/icons/svg/205/205577.svg',
+      },
+      name: 'about',
+      position: 2,
+    },
+  ];
 
   return (
     <View
@@ -52,6 +65,12 @@ const App = () => {
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}></MapView>
+      <FloatingAction
+        actions={actions}
+        onPressItem={name => {
+          alert(`selected button: ${name}`);
+        }}
+      />
     </View>
   );
 };

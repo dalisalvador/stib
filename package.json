@@ -11,6 +11,7 @@
     "axios": "^0.19.0",
     "react": "16.8.6",
     "react-native": "0.60.5",
+    "react-native-floating-action": "^1.18.0",
     "react-native-maps": "0.25.0"
   },
   "devDependencies": {
