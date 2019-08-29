@@ -16,6 +16,7 @@ import ModalAdd from './Components/Modal/ModalAdd';
 const App = () => {
   const [marginBottom, setMarginBottom] = useState(1);
   const [modalVisible, setModalVisible] = useState(false);
+  const [mainPressed, setMainPressed] = useState(false);
 
   useEffect(() => {
     // Geolocation.getCurrentPosition(info => alert(info));
@@ -49,32 +50,44 @@ const App = () => {
   ];
 
   return (
-    <View
-      style={{
-        width: '100%',
-        height: '100%',
-      }}>
-      <MapView
-        onMapReady={_onMapReady}
-        showsUserLocation={true}
-        showsMyLocationButton={true}
-        followsUserLocation={true}
-        provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-        style={{flex: 1, marginBottom}}
-        initialRegion={{
-          latitude: 50.848637,
-          longitude: 4.353461,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}></MapView>
+    <Fragment>
+      <View
+        style={{
+          width: '100%',
+          height: '100%',
+        }}>
+        {/* <MapView
+          onMapReady={_onMapReady}
+          showsUserLocation={true}
+          showsMyLocationButton={true}
+          followsUserLocation={true}
+          provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+          style={{
+            flex: 1,
+            marginBottom,
+            opacity: mainPressed || modalVisible ? 0.5 : 1,
+          }}
+          initialRegion={{
+            latitude: 50.848637,
+            longitude: 4.353461,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}></MapView> */}
+      </View>
       <FloatingAction
         actions={actions}
+        overlayColor={'rgba(0, 0, 0, 0)'}
+        onPressMain={() => setMainPressed(!mainPressed)}
+        onPressBackdrop={() => setMainPressed(false)}
         onPressItem={name => {
-          if (name === 'addLine') setModalVisible(true);
+          if (name === 'addLine') {
+            setMainPressed(false);
+            setModalVisible(true);
+          }
         }}
       />
       <ModalAdd visible={modalVisible} setModalVisible={setModalVisible} />
-    </View>
+    </Fragment>
   );
 };
 

@@ -7,14 +7,18 @@ import {
   View,
   Alert,
   Dimensions,
+  KeyboardAvoidingView,
 } from 'react-native';
+
+import CardAdd from '../CardAdd/CardAdd';
+
+import {Button} from 'react-native-elements';
 
 const ModalAdd = ({...props}) => {
   const {visible, setModalVisible} = props;
   return (
     <Modal animationType="slide" transparent visible={visible}>
       <TouchableOpacity
-        onPress={() => setModalVisible(!visible)}
         style={{
           flex: 1,
           flexDirection: 'column',
@@ -24,15 +28,17 @@ const ModalAdd = ({...props}) => {
         <View
           style={{
             height: Dimensions.get('window').height / 2,
-            width: Dimensions.get('window').width / 1.5,
+            width: Dimensions.get('window').width / 1.15,
             backgroundColor: 'white',
             borderRadius: 20,
           }}>
-          <Text>Hello World!</Text>
+          <CardAdd />
 
-          <TouchableHighlight onPress={() => setModalVisible(!visible)}>
-            <Text>Hide Modal</Text>
-          </TouchableHighlight>
+          <Button
+            raised
+            title="Close"
+            onPress={() => setModalVisible(!visible)}
+          />
         </View>
       </TouchableOpacity>
     </Modal>
