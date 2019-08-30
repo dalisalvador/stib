@@ -4,7 +4,6 @@ import {Icon} from 'react-native-elements';
 
 const Search = ({...props}) => {
   const {query, setQuery} = props;
-  console.log(query);
   return (
     <SearchBar
       placeholder="Type Here..."

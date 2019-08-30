@@ -13,14 +13,21 @@ import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import {FloatingAction} from 'react-native-floating-action';
 import ModalAdd from './Components/Modal/ModalAdd';
 
+import {AllLinesProvider} from './allLinesContext';
+import map from './assets/map';
+import allStops from './assets/info/stops';
+
 const App = () => {
   const [marginBottom, setMarginBottom] = useState(1);
   const [modalVisible, setModalVisible] = useState(false);
   const [mainPressed, setMainPressed] = useState(false);
+  const [allLines, setAllLines] = useState();
+  const [myLines, setMyLines] = useState([]);
 
   useEffect(() => {
-    // Geolocation.getCurrentPosition(info => alert(info));
-  });
+    setAllLines(map.initLines(allStops));
+    // map.getLine('3').then(response => setLine(response));
+  }, []);
 
   const _onMapReady = () => {
     PermissionsAndroid.request(
@@ -29,6 +36,10 @@ const App = () => {
       setMarginBottom(0);
     });
   };
+
+  const addLine = (selectedLine) => {
+    map.addToMyLines(selectedLine).then(newLine => setMyLines([...myLines, newLine]));
+  }
 
   const actions = [
     {
@@ -50,13 +61,14 @@ const App = () => {
   ];
 
   return (
-    <Fragment>
-      <View
-        style={{
-          width: '100%',
-          height: '100%',
-        }}>
-        {/* <MapView
+    <AllLinesProvider value={{allLines, myLines}}>
+      <Fragment>
+        <View
+          style={{
+            width: '100%',
+            height: '100%',
+          }}>
+          {/* <MapView
           onMapReady={_onMapReady}
           showsUserLocation={true}
           showsMyLocationButton={true}
@@ -73,21 +85,22 @@ const App = () => {
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           }}></MapView> */}
-      </View>
-      <FloatingAction
-        actions={actions}
-        overlayColor={'rgba(0, 0, 0, 0)'}
-        onPressMain={() => setMainPressed(!mainPressed)}
-        onPressBackdrop={() => setMainPressed(false)}
-        onPressItem={name => {
-          if (name === 'addLine') {
-            setMainPressed(false);
-            setModalVisible(true);
-          }
-        }}
-      />
-      <ModalAdd visible={modalVisible} setModalVisible={setModalVisible} />
-    </Fragment>
+        </View>
+        <FloatingAction
+          actions={actions}
+          overlayColor={'rgba(0, 0, 0, 0)'}
+          onPressMain={() => setMainPressed(!mainPressed)}
+          onPressBackdrop={() => setMainPressed(false)}
+          onPressItem={name => {
+            if (name === 'addLine') {
+              setMainPressed(false);
+              setModalVisible(true);
+            }
+          }}
+        />
+        <ModalAdd visible={modalVisible} setModalVisible={setModalVisible} addLine={addLine}/>
+      </Fragment>
+    </AllLinesProvider>
   );
 };
 

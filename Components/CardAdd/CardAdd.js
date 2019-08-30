@@ -9,30 +9,53 @@ import {Icon} from 'react-native-elements';
 
 // implemented without image with header
 const CardAdd = ({...props}) => {
+  const {setModalVisible, visible, addLine} = props;
   const [query, setQuery] = useState('');
   const [listResults, setListResults] = useState([]);
   return (
-    <View style={styles.container}>
-      <Card
-        containerStyle={cardContainer}
-        wrapperStyle={{borderWidth: 0}}
-        title="Add Trasnport Line">
-        <View>
-          <Search query={query} setQuery={setQuery} />
-          {query ? <ListResults /> : <MyLines />}
-        </View>
-      </Card>
-    </View>
+    <Card
+      containerStyle={cardContainer}
+      wrapperStyle={cardWrapperStyle}
+      title="Add Trasnport Line">
+      <Search query={query} setQuery={setQuery} />
+      <View style={styles.lines}>
+        {query ? <ListResults query={query} addLine={addLine}/> : <MyLines />}
+      </View>
+      <View style={styles.button}>
+        <Button
+          raised
+          title="Close"
+          onPress={() => setModalVisible(!visible)}
+        />
+      </View>
+    </Card>
   );
 };
 
 const styles = StyleSheet.create({
+  lines: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
   container: {
-    height: '90%',
+    backgroundColor: 'red',
+    height: '100%',
+    padding: 5,
+  },
+  button: {
+    justifyContent: 'flex-end',
   },
 });
+const cardWrapperStyle = {
+  borderWidth: 0,
+  flex: 1,
+};
 
 const cardContainer = {
+  backgroundColor: 'black',
+  flex: 1,
+  height: '100%',
+  flexDirection: 'column',
   borderWidth: 0, // Remove Border
   shadowColor: 'rgba(0,0,0, 0.0)', // Remove Shadow IOS
   shadowOffset: {height: 0, width: 0},

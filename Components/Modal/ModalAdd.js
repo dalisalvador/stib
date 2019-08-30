@@ -7,7 +7,7 @@ import {
   View,
   Alert,
   Dimensions,
-  KeyboardAvoidingView,
+  StyleSheet,
 } from 'react-native';
 
 import CardAdd from '../CardAdd/CardAdd';
@@ -15,34 +15,22 @@ import CardAdd from '../CardAdd/CardAdd';
 import {Button} from 'react-native-elements';
 
 const ModalAdd = ({...props}) => {
-  const {visible, setModalVisible} = props;
+  const {visible, setModalVisible, addLine} = props;
   return (
-    <Modal animationType="slide" transparent visible={visible}>
-      <TouchableOpacity
-        style={{
-          flex: 1,
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <View
-          style={{
-            height: Dimensions.get('window').height / 2,
-            width: Dimensions.get('window').width / 1.15,
-            backgroundColor: 'white',
-            borderRadius: 20,
-          }}>
-          <CardAdd />
-
-          <Button
-            raised
-            title="Close"
-            onPress={() => setModalVisible(!visible)}
-          />
-        </View>
-      </TouchableOpacity>
+    <Modal animationType="slide" visible={visible}>
+      <View style={styles.modalBody}>
+        <CardAdd setModalVisible={setModalVisible} visible={visible} addLine={addLine}/>
+      </View>
     </Modal>
   );
 };
 
+const styles = StyleSheet.create({
+  modalBody: {
+    height: '100%',
+    flex: 1,
+    width: Dimensions.get('window').width,
+    backgroundColor: 'blue',
+  },
+});
 export default ModalAdd;
