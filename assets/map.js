@@ -4,9 +4,9 @@ import lines from "./info/lines"
 
 const mapFunctions = {
   icons:  {
-      bus: 'https://image.flaticon.com/icons/svg/1432/1432540.svg',
-      tram: 'https://image.flaticon.com/icons/svg/1646/1646742.svg',
-      metro: 'https://image.flaticon.com/icons/svg/1646/1646715.svg',
+      bus: require("./img/bus.png"),
+      tram: require("./img/tram.png"),
+      metro: require("./img/metro.png"),
     },
   addToMyLines: async selection => {
  

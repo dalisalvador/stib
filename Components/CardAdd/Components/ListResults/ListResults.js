@@ -1,13 +1,12 @@
-import React, {useContext} from 'react';
-import {View, Text, FlatList, KeyboardAvoidingView, TouchableOpacity} from 'react-native';
+import React, {useEffect, useState, useContext} from 'react';
+import {View, Text, FlatList, TouchableOpacity} from 'react-native';
 import {ListItem} from 'react-native-elements';
 import {KeyboardAwareFlatList} from 'react-native-keyboard-aware-scroll-view';
-import { SvgUri } from 'react-native-svg';
 
 import AllLinesContext from '../../../../allLinesContext';
 
 const ListResults = ({...props}) => {
-  const {query, addLine} = props;
+  const {query, addLine, resetQuery} = props;
   const {allLines} = useContext(AllLinesContext);
   const resultLines = allLines.filter(
     line =>
@@ -16,24 +15,22 @@ const ListResults = ({...props}) => {
       String(line.nroStop).includes(query),
   );
 
-  const renderItem = ({item}) => (
-    <TouchableOpacity onPress={()=>addLine(item)}>
+   const renderItem = ({item}) => (
+    <TouchableOpacity onPress={()=>{
+      addLine(item); 
+      resetQuery();
+      }
+      }>
     <ListItem
       bottomDivider={true}
       title={`${item.mode} line ${item.nroStop}`}
       subtitle={`to ${item.direction}`}
-      // leftAvatar={{source: {uri: "https://image.flaticon.com/icons/svg/1646/1646742.svg"}}}
-      leftAvatar={<SvgUri
-      width="35px"
-      height="35px"
-      uri={item.icon}
-    />}
+      leftAvatar={{ source: item.icon }}
     />
     </TouchableOpacity>
   );
 
   const keyExtractor = (item, index) => index.toString();
-
 
   return (
     <KeyboardAwareFlatList

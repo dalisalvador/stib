@@ -1,44 +1,36 @@
-import React from 'react';
-import {View, Text} from 'react-native';
+import React, {useContext} from 'react';
+import {View, Text, FlatList, TouchableOpacity} from 'react-native';
 import {ListItem} from 'react-native-elements';
-import {AllLinesConsumer} from '../../../../allLinesContext';
+import {KeyboardAwareFlatList} from 'react-native-keyboard-aware-scroll-view';
+import { SvgUri } from 'react-native-svg';
+
+import AllLinesContext from '../../../../allLinesContext';
 
 const MyLines = ({...props}) => {
-  const list = [
-    {
-      name: 'Amy Farha',
-      avatar_url:
-        'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-      subtitle: 'Vice President',
-    },
-    {
-      name: 'Chris Jackson',
-      avatar_url:
-        'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-      subtitle: 'Vice Chairman',
-    },
-  ];
+  const {myLines} = useContext(AllLinesContext);
 
-  //console.log(user);
-  return (
-    <AllLinesConsumer>
-      {props => {
-        return (
-          <View>
-            <Text>My Lines</Text>
-            {/* {list.map((l, i) => (
-              <ListItem
-                key={i}
-                leftAvatar={{source: {uri: l.avatar_url}}}
-                title={l.name}
-                subtitle={l.subtitle}
-              />
-            ))} */}
-          </View>
-        );
-      }}
-    </AllLinesConsumer>
+  const renderItem = ({item}) => (
+    <ListItem
+      bottomDivider={true}
+      title={`${item.selection.mode} line ${item.selection.nroStop}`}
+      subtitle={`to ${item.selection.direction}`}
+      leftAvatar={{ source: item.selection.icon }}
+      rightAvatar={{ source: require("../../../../assets/img/delete.png")}}
+    />
   );
+
+  const keyExtractor = (item, index) => index.toString();
+
+
+  return myLines.length > 0 ? 
+    <KeyboardAwareFlatList
+      keyExtractor={keyExtractor}
+      style={{flex: 1, marginTop: 5}}
+      data={myLines}
+      renderItem={renderItem}
+    />
+    : <Text>No lines yet</Text>
+
 };
 
 export default MyLines;

@@ -12,6 +12,10 @@ const CardAdd = ({...props}) => {
   const {setModalVisible, visible, addLine} = props;
   const [query, setQuery] = useState('');
   const [listResults, setListResults] = useState([]);
+
+  const resetQuery = () => {
+    setQuery('');
+  }
   return (
     <Card
       containerStyle={cardContainer}
@@ -19,7 +23,7 @@ const CardAdd = ({...props}) => {
       title="Add Trasnport Line">
       <Search query={query} setQuery={setQuery} />
       <View style={styles.lines}>
-        {query ? <ListResults query={query} addLine={addLine}/> : <MyLines />}
+        {query ? <ListResults query={query} addLine={addLine} resetQuery={resetQuery}/> : <MyLines />}
       </View>
       <View style={styles.button}>
         <Button
