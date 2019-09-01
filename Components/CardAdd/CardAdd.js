@@ -9,21 +9,24 @@ import {Icon} from 'react-native-elements';
 
 // implemented without image with header
 const CardAdd = ({...props}) => {
-  const {setModalVisible, visible, addLine} = props;
+  const {setModalVisible, visible} = props;
   const [query, setQuery] = useState('');
-  const [listResults, setListResults] = useState([]);
 
   const resetQuery = () => {
     setQuery('');
-  }
+  };
   return (
     <Card
       containerStyle={cardContainer}
       wrapperStyle={cardWrapperStyle}
-      title="Add Trasnport Line">
+      title="My Trasnport Lines">
       <Search query={query} setQuery={setQuery} />
       <View style={styles.lines}>
-        {query ? <ListResults query={query} addLine={addLine} resetQuery={resetQuery}/> : <MyLines />}
+        {query ? (
+          <ListResults query={query} resetQuery={resetQuery} />
+        ) : (
+          <MyLines />
+        )}
       </View>
       <View style={styles.button}>
         <Button
@@ -39,10 +42,10 @@ const CardAdd = ({...props}) => {
 const styles = StyleSheet.create({
   lines: {
     flex: 1,
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
   },
   container: {
-    backgroundColor: 'red',
+    // backgroundColor: 'red',
     height: '100%',
     padding: 5,
   },
@@ -56,7 +59,7 @@ const cardWrapperStyle = {
 };
 
 const cardContainer = {
-  backgroundColor: 'black',
+  // backgroundColor: 'black',
   flex: 1,
   height: '100%',
   flexDirection: 'column',

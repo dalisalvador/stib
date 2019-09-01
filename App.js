@@ -7,15 +7,24 @@
  */
 
 import React, {Fragment, useState, useEffect} from 'react';
-import {StyleSheet, View, PermissionsAndroid, Dimensions} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  PermissionsAndroid,
+  Dimensions,
+  Text,
+} from 'react-native';
 
-import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+// import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
+
+import Geojson from 'react-native-geojson';
 import {FloatingAction} from 'react-native-floating-action';
 import ModalAdd from './Components/Modal/ModalAdd';
 
 import {AllLinesProvider} from './allLinesContext';
 import map from './assets/map';
 import allStops from './assets/info/stops';
+import MapBox from './Components/MapBox/MapBox';
 
 const App = () => {
   const [marginBottom, setMarginBottom] = useState(1);
@@ -23,23 +32,75 @@ const App = () => {
   const [mainPressed, setMainPressed] = useState(false);
   const [allLines, setAllLines] = useState();
   const [myLines, setMyLines] = useState([]);
+  const [geoJson, setGeoJson] = useState({
+    type: 'FeatureCollection',
+    features: [],
+  });
 
   useEffect(() => {
     setAllLines(map.initLines(allStops));
-    // map.getLine('3').then(response => setLine(response));
   }, []);
 
-  const _onMapReady = () => {
-    PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-    ).then(granted => {
-      setMarginBottom(0);
+  // const _onMapReady = () => {
+  //   PermissionsAndroid.request(
+  //     PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+  //   ).then(granted => {
+  //     setMarginBottom(0);
+  //   });
+  // };
+
+  const addLine = selectedLine => {
+    map.addToMyLines(selectedLine).then(newLine => {
+      setMyLines([...myLines, newLine]);
+      addLineToGeoJson(newLine);
     });
   };
 
-  const addLine = (selectedLine) => {
-    map.addToMyLines(selectedLine).then(newLine => setMyLines([...myLines, newLine]));
-  }
+  const deleteLine = lineTodelete => {
+    setMyLines([
+      ...myLines.filter((line, i) => myLines.indexOf(lineTodelete) !== i),
+    ]);
+
+    deleteLineFromGeoJson(lineTodelete);
+  };
+
+  const addLineToGeoJson = line => {
+    setGeoJson({
+      ...geoJson,
+      features: [
+        ...geoJson.features,
+        ...line.line.shape.features,
+        ...line.line.stops,
+      ],
+    });
+  };
+
+  const deleteLineFromGeoJson = line => {
+    setGeoJson({
+      ...geoJson,
+      features: [
+        ...geoJson.features.filter(
+          (feature, i) =>
+            geoJson.features.indexOf(line.line.shape.features[0]) !== i,
+        ),
+      ],
+    });
+  };
+
+  const renderMarkers = () => {
+    return myLines.map(line => {
+      return line.markers.map((coord, key) => (
+        <Marker
+          icon={line.iconType}
+          key={key}
+          coordinate={{
+            latitude: coord[1],
+            longitude: coord[0],
+          }}
+        />
+      ));
+    });
+  };
 
   const actions = [
     {
@@ -61,30 +122,14 @@ const App = () => {
   ];
 
   return (
-    <AllLinesProvider value={{allLines, myLines}}>
+    <AllLinesProvider value={{allLines, myLines, deleteLine, addLine}}>
       <Fragment>
         <View
           style={{
             width: '100%',
             height: '100%',
           }}>
-          {/* <MapView
-          onMapReady={_onMapReady}
-          showsUserLocation={true}
-          showsMyLocationButton={true}
-          followsUserLocation={true}
-          provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-          style={{
-            flex: 1,
-            marginBottom,
-            opacity: mainPressed || modalVisible ? 0.5 : 1,
-          }}
-          initialRegion={{
-            latitude: 50.848637,
-            longitude: 4.353461,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}></MapView> */}
+          <MapBox myLines={myLines} geoJson={geoJson} />
         </View>
         <FloatingAction
           actions={actions}
@@ -98,19 +143,10 @@ const App = () => {
             }
           }}
         />
-        <ModalAdd visible={modalVisible} setModalVisible={setModalVisible} addLine={addLine}/>
+        <ModalAdd visible={modalVisible} setModalVisible={setModalVisible} />
       </Fragment>
     </AllLinesProvider>
   );
 };
-
-const styles = StyleSheet.create({
-  map: {
-    justifyContent: 'center',
-    position: 'absolute',
-    height: Dimensions.get('window').height,
-    width: Dimensions.get('window').width,
-  },
-});
 
 export default App;

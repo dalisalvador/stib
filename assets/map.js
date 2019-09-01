@@ -1,17 +1,26 @@
 import axios from 'axios';
-import stops from "./info/stops"
-import lines from "./info/lines"
+import stops from './info/stops';
+import lines from './info/lines';
 
 const mapFunctions = {
-  icons:  {
-      bus: require("./img/bus.png"),
-      tram: require("./img/tram.png"),
-      metro: require("./img/metro.png"),
-    },
+  icons: {
+    bus: require('./img/bus.png'),
+    tram: require('./img/tram.png'),
+    metro: require('./img/metro.png'),
+  },
   addToMyLines: async selection => {
- 
-    let newShape = mapFunctions.filterLines(lines, selection.nroLine, selection.variantLine);
-    let newStops = mapFunctions.filterStops(stops, selection.nroStop, selection.variantStop);
+    let newShape = mapFunctions.filterLines(
+      lines,
+      selection.nroLine,
+      selection.variantLine,
+    );
+
+    let newStops = mapFunctions.filterStops(
+      stops,
+      selection.nroStop,
+      selection.variantStop,
+    );
+
     let icon =
       selection.mode === 'Tram'
         ? mapFunctions.icons.tram
@@ -36,35 +45,38 @@ const mapFunctions = {
       },
       markers,
       selection,
-      iconType: icon
-    }
+      iconType: icon,
+    };
   },
 
   updateMarkers: (lines, getLine, stops, selection) => {
     return new Promise((resolve, reject) => {
       getLine(selection.nroStop).then(data => {
         let newMarkers = [];
-        data.lines[0].vehiclePositions.map(vehicle => {
-          if (mapFunctions.getStopCoordinates(stops, vehicle, selection)) {
-            let line = lines.features.filter(
-              line =>
-                line.properties.LIGNE === selection.nroLine &&
-                line.properties.VARIANTE === selection.variantLine,
-            )[0].geometry.coordinates;
-            let coordinates = mapFunctions.getPosition(
-              mapFunctions.findStop(
-                line,
-                mapFunctions.getStopCoordinates(stops, vehicle, selection).geometry
-                  .coordinates,
-                0.01,
-              ),
-              vehicle.distanceFromPoint,
-            );
-            coordinates
-              ? newMarkers.push([coordinates[0], coordinates[1]])
-              : null;
-          }
-        });
+        if (data.lines[0]) {
+          data.lines[0].vehiclePositions.map(vehicle => {
+            if (mapFunctions.getStopCoordinates(stops, vehicle, selection)) {
+              let line = lines.features.filter(
+                line =>
+                  line.properties.LIGNE === selection.nroLine &&
+                  line.properties.VARIANTE === selection.variantLine,
+              )[0].geometry.coordinates;
+              let coordinates = mapFunctions.getPosition(
+                mapFunctions.findStop(
+                  line,
+                  mapFunctions.getStopCoordinates(stops, vehicle, selection)
+                    .geometry.coordinates,
+                  0.01,
+                ),
+                vehicle.distanceFromPoint,
+              );
+              coordinates
+                ? newMarkers.push([coordinates[0], coordinates[1]])
+                : null;
+            }
+          });
+        }
+
         if (newMarkers) resolve(newMarkers);
         else reject([]);
       });
@@ -98,7 +110,8 @@ const mapFunctions = {
               : x.properties.mode === 'M'
               ? 'Metro'
               : null,
-          icon: x.properties.mode === 'B'
+          icon:
+            x.properties.mode === 'B'
               ? mapFunctions.icons.bus
               : x.properties.mode === 'T'
               ? mapFunctions.icons.tram
@@ -120,6 +133,12 @@ const mapFunctions = {
     return toStrArr.reverse().join('') + mode.toLowerCase();
   },
   filterLines: (allLines, myLine, variant) => {
+    let features = allLines.features.filter(
+      line =>
+        line.properties.LIGNE === myLine &&
+        line.properties.VARIANTE === variant,
+    );
+
     return {
       ...allLines,
       features: allLines.features.filter(

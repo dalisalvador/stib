@@ -15,11 +15,11 @@ import CardAdd from '../CardAdd/CardAdd';
 import {Button} from 'react-native-elements';
 
 const ModalAdd = ({...props}) => {
-  const {visible, setModalVisible, addLine} = props;
+  const {visible, setModalVisible} = props;
   return (
     <Modal animationType="slide" visible={visible}>
       <View style={styles.modalBody}>
-        <CardAdd setModalVisible={setModalVisible} visible={visible} addLine={addLine}/>
+        <CardAdd setModalVisible={setModalVisible} visible={visible} />
       </View>
     </Modal>
   );
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     height: '100%',
     flex: 1,
     width: Dimensions.get('window').width,
-    backgroundColor: 'blue',
+    // backgroundColor: 'blue',
   },
 });
 export default ModalAdd;

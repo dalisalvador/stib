@@ -6,8 +6,8 @@ import {KeyboardAwareFlatList} from 'react-native-keyboard-aware-scroll-view';
 import AllLinesContext from '../../../../allLinesContext';
 
 const ListResults = ({...props}) => {
-  const {query, addLine, resetQuery} = props;
-  const {allLines} = useContext(AllLinesContext);
+  const {query, resetQuery} = props;
+  const {allLines, addLine} = useContext(AllLinesContext);
   const resultLines = allLines.filter(
     line =>
       line.direction.toLowerCase().includes(query) ||
@@ -15,18 +15,18 @@ const ListResults = ({...props}) => {
       String(line.nroStop).includes(query),
   );
 
-   const renderItem = ({item}) => (
-    <TouchableOpacity onPress={()=>{
-      addLine(item); 
-      resetQuery();
-      }
-      }>
-    <ListItem
-      bottomDivider={true}
-      title={`${item.mode} line ${item.nroStop}`}
-      subtitle={`to ${item.direction}`}
-      leftAvatar={{ source: item.icon }}
-    />
+  const renderItem = ({item}) => (
+    <TouchableOpacity
+      onPress={() => {
+        addLine(item);
+        resetQuery();
+      }}>
+      <ListItem
+        bottomDivider={true}
+        title={`${item.mode} line ${item.nroStop}`}
+        subtitle={`to ${item.direction}`}
+        leftAvatar={{source: item.icon}}
+      />
     </TouchableOpacity>
   );
 

@@ -6,7 +6,7 @@ const Search = ({...props}) => {
   const {query, setQuery} = props;
   return (
     <SearchBar
-      placeholder="Type Here..."
+      placeholder="Find Line to track..."
       platform="default"
       lightTheme
       round
