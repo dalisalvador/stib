@@ -76,17 +76,14 @@ const MapBox = ({...props}) => {
       {myLines.length > 0 ? (
         <Fragment>
         <MapboxGL.ShapeSource id="myLines" shape={geoJson}>
-          {myLines.map((line, i) => (
               <MapboxGL.LineLayer
-                key={i}
-                id={line.line.shape.name}
+                // key={i}
+                id={"lines"}
                 style={{
                   lineColor: ['get', 'COLOR_HEX'],
                   lineWidth: 5,
                 }}
               />
-               
-          ))}
           <MapboxGL.SymbolLayer
                 id="symbolLocationSymbols"
                 minZoomLevel={12}

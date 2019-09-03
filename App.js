@@ -60,6 +60,7 @@ const App = () => {
       ...myLines.filter((line, i) => myLines.indexOf(lineTodelete) !== i),
     ]);
     deleteLineFromGeoJson(lineTodelete);
+    //deleteStopsFromGeoJson(lineTodelete);
   };
 
   const addLineToGeoJson = line => {
@@ -80,20 +81,19 @@ const App = () => {
     });
   };
 
-  const deleteVehiculeFromGeoJson = (lineTodelete) => {
-    // setVehiculeGeoJson({
-    //       ...vehiculeGeoJson,
-    //       features: [
-    //         ...vehiculeGeoJson.features.filter(
-    //           (feature, i) =>
-    //             feature.,
-    //         ),
-    //       ],
-    //     });
+  const deleteStopsFromGeoJson = (lineTodelete) => {
+    setGeoJson({
+        ...geoJson,
+        features: [
+          ...geoJson.features.filter(
+            (feature, i) =>
+              geoJson.features.indexOf(line.line.shape.features[0]) !== i
+          ),
+        ],
+      });
   }
 
   updateVehiculeGeoJson = async () => {
-    console.log("updating vehicules")
     let updated;
     if(myLines.length > 0) {
       updated = myLines.map(async line => {
@@ -116,16 +116,27 @@ const App = () => {
     }
   }
 
+
   const deleteLineFromGeoJson = line => {
-    setGeoJson({
-      ...geoJson,
-      features: [
-        ...geoJson.features.filter(
-          (feature, i) =>
-            geoJson.features.indexOf(line.line.shape.features[0]) !== i,
-        ),
-      ],
-    });
+  // console.log(line, geoJson)
+  let newfeatures = geoJson.features.filter(feature => line.line.stops.indexOf(feature) ===-1)
+  console.log(newfeatures)
+  newfeatures = newfeatures.filter(feature => line.line.shape.features.indexOf(feature) === -1)
+
+  console.log(newfeatures)
+  
+
+  // console.log(geoJson.features.filter(feature => line.line.stops.indexOf(feature) ===-1))
+  // console.log(geoJson.features.filter(feature => line.line.shape.features.indexOf(feature) === -1))
+
+  // console.log(pipe(geoJson.features.filter(feature => line.line.stops.indexOf(feature) ===-1), ))
+
+  setGeoJson({
+        ...geoJson,
+        features: [
+          ...newfeatures,
+        ],
+      });
   };
 
 
@@ -149,6 +160,7 @@ const App = () => {
   ];
 
 
+  console.log(geoJson, myLines)
   return (
     <AllLinesProvider value={{allLines, myLines, deleteLine, addLine}}>
       <Fragment>

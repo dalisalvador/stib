@@ -89,7 +89,6 @@ const mapFunctions = {
   // },
 
   updateVehicules: (selection, stops) => {
-    console.log(selection)
     return new Promise((resolve, reject) => {
       mapFunctions.getLine(selection.nroStop).then(data => {
         let features = [];
