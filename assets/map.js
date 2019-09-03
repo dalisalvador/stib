@@ -30,31 +30,72 @@ const mapFunctions = {
         ? mapFunctions.icons.metro
         : mapFunctions.icons.bus;
 
-    let markers = await mapFunctions.updateMarkers(
-      lines,
-      mapFunctions.getLine,
+    // let vehicules = await mapFunctions.updateVehicules(
+    //   lines,
+    //   mapFunctions.getLine,
+    //   newStops,
+    //   selection,
+    // );
+
+    let vehicules = await mapFunctions.updateVehicules(
       newStops,
-      selection,
+      selection
     );
 
     return {
+      newLine:{
       line: {
         name: selection.nroLine,
         shape: newShape,
         stops: newStops,
       },
-      markers,
       selection,
       iconType: icon,
+      },
+      vehicules,
     };
   },
+  //   updateVehicules: (lines, getLine, stops, selection) => {
+  //   return new Promise((resolve, reject) => {
+  //     getLine(selection.nroStop).then(data => {
+  //       let features = [];
+  //       if (data.lines[0]) {
+  //         data.lines[0].vehiclePositions.map(vehicle => {
+  //           if (mapFunctions.getStopCoordinates(stops, vehicle, selection)) {
+  //             let line = lines.features.filter(
+  //               line =>
+  //                 line.properties.LIGNE === selection.nroLine &&
+  //                 line.properties.VARIANTE === selection.variantLine,
+  //             )[0].geometry.coordinates;
+  //             let coordinates = mapFunctions.getPosition(
+  //               mapFunctions.findStop(
+  //                 line,
+  //                 mapFunctions.getStopCoordinates(stops, vehicle, selection)
+  //                   .geometry.coordinates,
+  //                 0.01,
+  //               ),
+  //               vehicle.distanceFromPoint,
+  //             );
+  //             coordinates
+  //               ? features.push(mapFunctions.createVehiculeFeature([coordinates[0], coordinates[1]], selection))
+  //               : null;
+  //           }
+  //         });
+  //       }
+  //       if (features) resolve(features);
+  //       else reject([]);
+  //     });
+  //   });
+  // },
 
-  updateMarkers: (lines, getLine, stops, selection) => {
+  updateVehicules: (selection, stops) => {
+    console.log(selection)
     return new Promise((resolve, reject) => {
-      getLine(selection.nroStop).then(data => {
-        let newMarkers = [];
+      mapFunctions.getLine(selection.nroStop).then(data => {
+        let features = [];
         if (data.lines[0]) {
           data.lines[0].vehiclePositions.map(vehicle => {
+            
             if (mapFunctions.getStopCoordinates(stops, vehicle, selection)) {
               let line = lines.features.filter(
                 line =>
@@ -71,18 +112,20 @@ const mapFunctions = {
                 vehicle.distanceFromPoint,
               );
               coordinates
-                ? newMarkers.push([coordinates[0], coordinates[1]])
+                ? features.push(mapFunctions.createVehiculeFeature([coordinates[0], coordinates[1]], selection))
                 : null;
             }
           });
         }
-
-        if (newMarkers) resolve(newMarkers);
+        if (features) resolve(features);
         else reject([]);
       });
     });
   },
-
+  
+  createVehiculeFeature: (coordinates, line) => {
+      return { "type": "Feature", "properties": { "numero_lig": line.nroStop, "variante": line.variantStop, "mode": line.mode, "nroLine": line.nroLine }, "geometry": { "type": "Point", "coordinates": coordinates } }
+  }, 
   initLines: allStops => {
     let allLines = [];
     allStops.features.map(x => {

@@ -36,23 +36,22 @@ const App = () => {
     type: 'FeatureCollection',
     features: [],
   });
+  const [vehiculesGeoJson, setVehiculesGeoJson] = useState({
+    type: 'FeatureCollection',
+    features: [],
+  });
 
   useEffect(() => {
     setAllLines(map.initLines(allStops));
+    setInterval(() => updateVehiculeGeoJson(), 1000*10)
   }, []);
 
-  // const _onMapReady = () => {
-  //   PermissionsAndroid.request(
-  //     PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-  //   ).then(granted => {
-  //     setMarginBottom(0);
-  //   });
-  // };
 
   const addLine = selectedLine => {
-    map.addToMyLines(selectedLine).then(newLine => {
-      setMyLines([...myLines, newLine]);
-      addLineToGeoJson(newLine);
+    map.addToMyLines(selectedLine).then(response => {
+      setMyLines([...myLines, response.newLine]);
+      addLineToGeoJson(response.newLine);
+      addVehiculesToGeoJson(response.vehicules)
     });
   };
 
@@ -60,7 +59,6 @@ const App = () => {
     setMyLines([
       ...myLines.filter((line, i) => myLines.indexOf(lineTodelete) !== i),
     ]);
-
     deleteLineFromGeoJson(lineTodelete);
   };
 
@@ -75,6 +73,49 @@ const App = () => {
     });
   };
 
+    const addVehiculesToGeoJson = features => {
+    setVehiculesGeoJson({
+      ...vehiculesGeoJson,
+      features,
+    });
+  };
+
+  const deleteVehiculeFromGeoJson = (lineTodelete) => {
+    // setVehiculeGeoJson({
+    //       ...vehiculeGeoJson,
+    //       features: [
+    //         ...vehiculeGeoJson.features.filter(
+    //           (feature, i) =>
+    //             feature.,
+    //         ),
+    //       ],
+    //     });
+  }
+
+  updateVehiculeGeoJson = async () => {
+    console.log("updating vehicules")
+    let updated;
+    if(myLines.length > 0) {
+      updated = myLines.map(async line => {
+                  return new Promise((resolve, reject)=>{
+                      let updated = map.updateVehicules(line.selection, line.line.stops);
+                      if(updated) resolve(updated)
+                      else reject("error")
+                  })
+      })
+      
+      Promise.all(updated).then(features => {
+        setVehiculesGeoJson({
+              ...vehiculesGeoJson,
+              features: features.reduce((a,b)=>{
+          return a.concat(b)
+        }),
+        })
+      })
+
+    }
+  }
+
   const deleteLineFromGeoJson = line => {
     setGeoJson({
       ...geoJson,
@@ -87,20 +128,6 @@ const App = () => {
     });
   };
 
-  const renderMarkers = () => {
-    return myLines.map(line => {
-      return line.markers.map((coord, key) => (
-        <Marker
-          icon={line.iconType}
-          key={key}
-          coordinate={{
-            latitude: coord[1],
-            longitude: coord[0],
-          }}
-        />
-      ));
-    });
-  };
 
   const actions = [
     {
@@ -118,8 +145,9 @@ const App = () => {
       },
       name: 'about',
       position: 2,
-    },
+    }
   ];
+
 
   return (
     <AllLinesProvider value={{allLines, myLines, deleteLine, addLine}}>
@@ -129,7 +157,7 @@ const App = () => {
             width: '100%',
             height: '100%',
           }}>
-          <MapBox myLines={myLines} geoJson={geoJson} />
+          <MapBox myLines={myLines} geoJson={geoJson} vehiculesGeoJson={vehiculesGeoJson}/>
         </View>
         <FloatingAction
           actions={actions}
