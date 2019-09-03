@@ -30,13 +30,6 @@ const mapFunctions = {
         ? mapFunctions.icons.metro
         : mapFunctions.icons.bus;
 
-    // let vehicules = await mapFunctions.updateVehicules(
-    //   lines,
-    //   mapFunctions.getLine,
-    //   newStops,
-    //   selection,
-    // );
-
     let vehicules = await mapFunctions.updateVehicules(
       newStops,
       selection
@@ -55,39 +48,6 @@ const mapFunctions = {
       vehicules,
     };
   },
-  //   updateVehicules: (lines, getLine, stops, selection) => {
-  //   return new Promise((resolve, reject) => {
-  //     getLine(selection.nroStop).then(data => {
-  //       let features = [];
-  //       if (data.lines[0]) {
-  //         data.lines[0].vehiclePositions.map(vehicle => {
-  //           if (mapFunctions.getStopCoordinates(stops, vehicle, selection)) {
-  //             let line = lines.features.filter(
-  //               line =>
-  //                 line.properties.LIGNE === selection.nroLine &&
-  //                 line.properties.VARIANTE === selection.variantLine,
-  //             )[0].geometry.coordinates;
-  //             let coordinates = mapFunctions.getPosition(
-  //               mapFunctions.findStop(
-  //                 line,
-  //                 mapFunctions.getStopCoordinates(stops, vehicle, selection)
-  //                   .geometry.coordinates,
-  //                 0.01,
-  //               ),
-  //               vehicle.distanceFromPoint,
-  //             );
-  //             coordinates
-  //               ? features.push(mapFunctions.createVehiculeFeature([coordinates[0], coordinates[1]], selection))
-  //               : null;
-  //           }
-  //         });
-  //       }
-  //       if (features) resolve(features);
-  //       else reject([]);
-  //     });
-  //   });
-  // },
-
   updateVehicules: (selection, stops) => {
     return new Promise((resolve, reject) => {
       mapFunctions.getLine(selection.nroStop).then(data => {
@@ -120,6 +80,41 @@ const mapFunctions = {
         else reject([]);
       });
     });
+  },
+
+    updateAllVehicules: (nroStops, stops) => {
+    // nroStops.map(async stop => {
+      console.log(nroStops[0].join('%2C'))
+      mapFunctions.getLine(nroStops[0].join('%2C')).then(data => {
+        console.log(data)
+        // let features = [];
+        // if (data.lines[0]) {
+        //   data.lines[0].vehiclePositions.map(vehicle => {
+        //      if (mapFunctions.getStopCoordinates(stops, vehicle, selection)) {
+        //       let line = lines.features.filter(
+        //         line =>
+        //           line.properties.LIGNE === selection.nroLine &&
+        //           line.properties.VARIANTE === selection.variantLine,
+        //       )[0].geometry.coordinates;
+        //       let coordinates = mapFunctions.getPosition(
+        //         mapFunctions.findStop(
+        //           line,
+        //           mapFunctions.getStopCoordinates(stops, vehicle, selection)
+        //             .geometry.coordinates,
+        //           0.01,
+        //         ),
+        //         vehicle.distanceFromPoint,
+        //       );
+        //       coordinates
+        //         ? features.push(mapFunctions.createVehiculeFeature([coordinates[0], coordinates[1]], selection))
+        //         : null;
+        //     }
+        //   });
+        // }
+        // if (features) resolve(features);
+        // else reject([]);
+      // });
+      })
   },
   
   createVehiculeFeature: (coordinates, line) => {
@@ -270,7 +265,7 @@ const mapFunctions = {
     let getUrl =
       'https://opendata-api.stib-mivb.be/OperationMonitoring/4.0/VehiclePositionByLine/' +
       line;
-    return axios
+     return axios
       .get(getUrl, {
         headers: {
           Accept: 'application/json',

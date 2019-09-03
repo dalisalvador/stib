@@ -43,8 +43,12 @@ const App = () => {
 
   useEffect(() => {
     setAllLines(map.initLines(allStops));
-    setInterval(() => updateVehiculeGeoJson(), 1000*10)
+   // setInterval(() => {updateAllVehiculeGeoJson()}, 1000*10)
   }, []);
+
+  useEffect(() => {
+   setInterval(() => {updateAllVehiculeGeoJson(allLines)}, 1000*20)
+  }, [allLines]);
 
 
   const addLine = selectedLine => {
@@ -60,6 +64,7 @@ const App = () => {
       ...myLines.filter((line, i) => myLines.indexOf(lineTodelete) !== i),
     ]);
     deleteLineFromGeoJson(lineTodelete);
+    updateVehiculeGeoJson();
     //deleteStopsFromGeoJson(lineTodelete);
   };
 
@@ -93,7 +98,7 @@ const App = () => {
       });
   }
 
-  updateVehiculeGeoJson = async () => {
+  const updateVehiculeGeoJson = async () => {
     let updated;
     if(myLines.length > 0) {
       updated = myLines.map(async line => {
@@ -116,20 +121,26 @@ const App = () => {
     }
   }
 
+  const  updateAllVehiculeGeoJson = async () => {
+    allLines ? map.updateAllVehicules(chunkArray(allLines.map(line => line.nroStop).filter((x,i,arr) =>arr.indexOf(x)=== i),10)) : null;
+
+  }
+  
+  const chunkArray = (myArray, chunk_size) => {
+    var results = [];
+    
+    while (myArray.length) {
+        results.push(myArray.splice(0, chunk_size));
+    }
+    
+    return results;
+}
+
+
 
   const deleteLineFromGeoJson = line => {
-  // console.log(line, geoJson)
   let newfeatures = geoJson.features.filter(feature => line.line.stops.indexOf(feature) ===-1)
-  console.log(newfeatures)
   newfeatures = newfeatures.filter(feature => line.line.shape.features.indexOf(feature) === -1)
-
-  console.log(newfeatures)
-  
-
-  // console.log(geoJson.features.filter(feature => line.line.stops.indexOf(feature) ===-1))
-  // console.log(geoJson.features.filter(feature => line.line.shape.features.indexOf(feature) === -1))
-
-  // console.log(pipe(geoJson.features.filter(feature => line.line.stops.indexOf(feature) ===-1), ))
 
   setGeoJson({
         ...geoJson,

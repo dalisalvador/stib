@@ -91,14 +91,14 @@ const MapBox = ({...props}) => {
           />
         </MapboxGL.ShapeSource>
         {/* Temporal fix. Cant filter using Case expression. As a result need to create 3 shapesources */}
-        <MapboxGL.ShapeSource id="vehicules" shape={vehiculesGeoJson}>
+        {/* <MapboxGL.ShapeSource id="vehicules" shape={vehiculesGeoJson}>
          <MapboxGL.SymbolLayer
                 id="myvehicules"
                 minZoomLevel={12}
                 style={iconStyles.vehicules.tram}
           />
-         </MapboxGL.ShapeSource>
-         {/* <MapboxGL.ShapeSource id="tram" shape={vehiculesGeoJson}>
+         </MapboxGL.ShapeSource> */}
+         <MapboxGL.ShapeSource id="tram" shape={vehiculesGeoJson}>
          <MapboxGL.SymbolLayer
                 id="myTrams"
                 filter={['==', ['get', 'mode'], "Tram"]}
@@ -121,7 +121,7 @@ const MapBox = ({...props}) => {
                 minZoomLevel={12}
                 style={iconStyles.vehicules.bus}
           />
-         </MapboxGL.ShapeSource> */}
+         </MapboxGL.ShapeSource>
          </Fragment>
        
       ) : null}
