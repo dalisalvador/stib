@@ -10,9 +10,9 @@ const ListResults = ({...props}) => {
   const {allLines, addLine} = useContext(AllLinesContext);
   const resultLines = allLines.filter(
     line =>
-      line.direction.toLowerCase().includes(query) ||
-      line.mode.toLowerCase().includes(query) ||
-      String(line.nroStop).includes(query),
+      line.direction.toLowerCase().includes(query.toLowerCase()) ||
+      line.mode.toLowerCase().includes(query.toLowerCase()) ||
+      String(line.nroStop).includes(query.toLowerCase()),
   );
 
   const renderItem = ({item}) => (
