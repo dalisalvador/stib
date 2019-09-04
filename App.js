@@ -24,6 +24,7 @@ import ModalAdd from './Components/Modal/ModalAdd';
 import {AllLinesProvider} from './allLinesContext';
 import map from './assets/map';
 import allStops from './assets/info/stops';
+import lines from './assets/info/lines';
 import MapBox from './Components/MapBox/MapBox';
 
 const App = () => {
@@ -47,6 +48,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+   updateAllVehicleGeoJson(allLines)
    setInterval(() => {updateAllVehicleGeoJson(allLines)}, 1000*31)
   }, [allLines]);
 
@@ -55,7 +57,7 @@ const App = () => {
     map.addToMyLines(selectedLine).then(response => {
       setMyLines([...myLines, response.newLine]);
       addLineToGeoJson(response.newLine);
-      addVehiculesToGeoJson(response.vehicules)
+      //addVehiculesToGeoJson(response.vehicules)
     });
   };
 
@@ -64,7 +66,7 @@ const App = () => {
       ...myLines.filter((line, i) => myLines.indexOf(lineTodelete) !== i),
     ]);
     deleteLineFromGeoJson(lineTodelete);
-    updateVehiculeGeoJson();
+    //updateVehiculeGeoJson();
     //deleteStopsFromGeoJson(lineTodelete);
   };
 
@@ -189,7 +191,7 @@ const App = () => {
             width: '100%',
             height: '100%',
           }}>
-          <MapBox myLines={myLines} geoJson={geoJson} vehiculesGeoJson={vehiculesGeoJson}/>
+          <MapBox myLines={myLines} geoJson={geoJson} vehiculesGeoJson={vehiculesGeoJson} allStops={allStops} mapFunctions={map} />
         </View>
         <FloatingAction
           actions={actions}

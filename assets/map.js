@@ -8,6 +8,7 @@ const mapFunctions = {
     tram: require('./img/tram.png'),
     metro: require('./img/metro.png'),
   },
+  
   addToMyLines: async selection => {
     let newShape = mapFunctions.filterLines(
       lines,
@@ -30,11 +31,6 @@ const mapFunctions = {
         ? mapFunctions.icons.metro
         : mapFunctions.icons.bus;
 
-    let vehicules = await mapFunctions.updateVehicules(
-      newStops,
-      selection
-    );
-
     return {
       newLine:{
       line: {
@@ -44,44 +40,9 @@ const mapFunctions = {
       },
       selection,
       iconType: icon,
-      },
-      vehicules,
+      }
     };
   },
-  updateVehicules: (selection, stops) => {
-    return new Promise((resolve, reject) => {
-      mapFunctions.getLine(selection.nroStop).then(data => {
-        let features = [];
-        if (data.lines[0]) {
-          data.lines[0].vehiclePositions.map(vehicle => {
-            
-            if (mapFunctions.getStopCoordinates(stops, vehicle, selection)) {
-              let line = lines.features.filter(
-                line =>
-                  line.properties.LIGNE === selection.nroLine &&
-                  line.properties.VARIANTE === selection.variantLine,
-              )[0].geometry.coordinates;
-              let coordinates = mapFunctions.getPosition(
-                mapFunctions.findStop(
-                  line,
-                  mapFunctions.getStopCoordinates(stops, vehicle, selection)
-                    .geometry.coordinates,
-                  0.01,
-                ),
-                vehicle.distanceFromPoint,
-              );
-              coordinates
-                ? features.push(mapFunctions.createVehiculeFeature([coordinates[0], coordinates[1]], selection))
-                : null;
-            }
-          });
-        }
-        if (features) resolve(features);
-        else reject([]);
-      });
-    });
-  },
-
 
   getVehicles: async (stops) => {
     return new Promise((resolve, reject) => {
@@ -141,10 +102,6 @@ const mapFunctions = {
   createVehicleFeature: (coordinates, stop) => {
       return { "type": "Feature", "properties": { "numero_lig": stop.properties.numero_lig, "variante": stop.properties.variante, "mode": stop.properties.mode }, "geometry": { "type": "Point", "coordinates": coordinates } }
   }, 
-  
-  // createVehiculeFeature: (coordinates, line) => {
-  //     return { "type": "Feature", "properties": { "numero_lig": line.nroStop, "variante": line.variantStop, "mode": line.mode, "nroLine": line.nroLine }, "geometry": { "type": "Point", "coordinates": coordinates } }
-  // }, 
 
   initLines: allStops => {
     let allLines = [];
@@ -186,6 +143,7 @@ const mapFunctions = {
 
     return allLines;
   },
+
   setVariantLine: (variantStop, mode) => {
     let toStrArr = String(variantStop)
       .split('')
@@ -195,6 +153,7 @@ const mapFunctions = {
     }
     return toStrArr.reverse().join('') + mode.toLowerCase();
   },
+
   filterLines: (allLines, myLine, variant) => {
     let features = allLines.features.filter(
       line =>
@@ -234,24 +193,7 @@ const mapFunctions = {
     );
   },
 
-  // findStop: (line, stopCoordinates, precision) => {
-  //   return line[0].slice(
-  //     line[0].indexOf(
-  //       line[0].find(
-  //         x =>
-  //           mapFunctions.distance(
-  //             parseFloat(x[1]),
-  //             parseFloat(x[0]),
-  //             parseFloat(stopCoordinates[1]),
-  //             parseFloat(stopCoordinates[0]),
-  //             'K',
-  //           ) < precision,
-  //       ),
-  //     ),
-  //   );
-  // },
-
-    findStop: (line, stopCoordinates, precision) => {
+  findStop: (line, stopCoordinates, precision) => {
     return line[0].slice(
       line[0].indexOf(
         line[0].find(
@@ -295,16 +237,7 @@ const mapFunctions = {
     }
   },
 
-  // getStopCoordinates: (allStops, vehicle, selection) => {
-  //   return allStops.find(
-  //     stop =>
-  //       stop.properties.numero_lig === selection.nroStop &&
-  //       stop.properties.variante === selection.variantStop &&
-  //       stop.properties.stop_id.includes(vehicle.pointId),
-  //   );
-  // },
-
-    getStopCoordinates: (allStops, vehicle, lineId) => {
+  getStopCoordinates: (allStops, vehicle, lineId) => {
     return allStops.find(
       stop =>
         stop.properties.numero_lig === lineId &&
