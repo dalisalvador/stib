@@ -47,7 +47,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-   setInterval(() => {updateAllVehiculeGeoJson(allLines)}, 1000*20)
+   setInterval(() => {updateAllVehicleGeoJson(allLines)}, 1000*31)
   }, [allLines]);
 
 
@@ -121,10 +121,19 @@ const App = () => {
     }
   }
 
-  const  updateAllVehiculeGeoJson = async () => {
-    allLines ? map.updateAllVehicules(chunkArray(allLines.map(line => line.nroStop).filter((x,i,arr) =>arr.indexOf(x)=== i),10)) : null;
+  const  updateAllVehicleGeoJson = async () => {
+    if(allLines){
+      let responses = await map.updateAllVehicles(chunkArray(allLines.map(line => line.nroStop).filter((x,i,arr) =>arr.indexOf(x)=== i),10));
 
-  }
+      Promise.all(responses).then(features => 
+        setVehiculesGeoJson({
+           ...vehiculesGeoJson,
+           features: features.reduce((a,b)=>{
+            return a.concat(b)
+          })
+        }))
+    }
+   }
   
   const chunkArray = (myArray, chunk_size) => {
     var results = [];
@@ -171,7 +180,7 @@ const App = () => {
   ];
 
 
-  console.log(geoJson, myLines)
+  //console.log(vehiculesGeoJson, myLines)
   return (
     <AllLinesProvider value={{allLines, myLines, deleteLine, addLine}}>
       <Fragment>

@@ -82,44 +82,70 @@ const mapFunctions = {
     });
   },
 
-    updateAllVehicules: (nroStops, stops) => {
-    // nroStops.map(async stop => {
-      console.log(nroStops[0].join('%2C'))
-      mapFunctions.getLine(nroStops[0].join('%2C')).then(data => {
-        console.log(data)
-        // let features = [];
-        // if (data.lines[0]) {
-        //   data.lines[0].vehiclePositions.map(vehicle => {
-        //      if (mapFunctions.getStopCoordinates(stops, vehicle, selection)) {
-        //       let line = lines.features.filter(
-        //         line =>
-        //           line.properties.LIGNE === selection.nroLine &&
-        //           line.properties.VARIANTE === selection.variantLine,
-        //       )[0].geometry.coordinates;
-        //       let coordinates = mapFunctions.getPosition(
-        //         mapFunctions.findStop(
-        //           line,
-        //           mapFunctions.getStopCoordinates(stops, vehicle, selection)
-        //             .geometry.coordinates,
-        //           0.01,
-        //         ),
-        //         vehicle.distanceFromPoint,
-        //       );
-        //       coordinates
-        //         ? features.push(mapFunctions.createVehiculeFeature([coordinates[0], coordinates[1]], selection))
-        //         : null;
-        //     }
-        //   });
-        // }
-        // if (features) resolve(features);
-        // else reject([]);
-      // });
-      })
+
+  getVehicles: async (stops) => {
+    return new Promise((resolve, reject) => {
+           mapFunctions.getLine(stops.join('%2C')).then(data => {
+            if (data) resolve(data)
+            else reject ("error")
+          })
+    });
   },
-  
-  createVehiculeFeature: (coordinates, line) => {
-      return { "type": "Feature", "properties": { "numero_lig": line.nroStop, "variante": line.variantStop, "mode": line.mode, "nroLine": line.nroLine }, "geometry": { "type": "Point", "coordinates": coordinates } }
+
+  getTerminalName: (stopId) => {
+    return stops.features.find(stop => stop.properties.stop_id === stopId)
+  },
+
+  getStopFromVehiclePosition: (vehicle) => {
+    return stops.features.filter(stop => 
+        stop.properties.stop_id === vehicle.pointId && 
+        stop.properties.terminus === mapFunctions.getTerminalName(vehicle.pointId).properties.terminus)
+  },
+
+  getLineShape: (stopShape) => {
+    let LIGNE = mapFunctions.setVariantLine(stopShape.properties.numero_lig,stopShape.properties.mode);
+    let VARIANTE =  stopShape.properties.variante === '1' ? 901 : 902;
+    return lines.features.find(line => line.properties.LIGNE === LIGNE && line.properties.VARIANTE === VARIANTE)
+  },
+
+  updateAllVehicles: async (nroStops) => {
+    let features = [];
+    return nroStops.map(async stop => {
+      return new Promise(async (resolve, reject) => {
+        let data = await mapFunctions.getVehicles(stop)
+        if (data.lines.length > 0) {
+          data.lines.map(line => {
+            line.vehiclePositions.map(vehicle => {
+              let stopsShape = mapFunctions.getStopFromVehiclePosition(vehicle);
+              stopsShape.map(stop => {
+                let linesShape = mapFunctions.getLineShape(stop)
+                if(linesShape){
+                  let coordinates = mapFunctions.getPosition(
+                    mapFunctions.findStop(
+                    linesShape.geometry.coordinates,
+                    stop.geometry.coordinates,
+                    0.01)
+                    ,vehicle.distanceFromPoint);
+                  coordinates ? features.push(mapFunctions.createVehicleFeature([coordinates[0], coordinates[1]], stop))
+                      : null;
+                }
+              })
+            })
+          })
+        }
+        if(features.length > 0) resolve(features)
+      });
+    })
+  },
+
+  createVehicleFeature: (coordinates, stop) => {
+      return { "type": "Feature", "properties": { "numero_lig": stop.properties.numero_lig, "variante": stop.properties.variante, "mode": stop.properties.mode }, "geometry": { "type": "Point", "coordinates": coordinates } }
   }, 
+  
+  // createVehiculeFeature: (coordinates, line) => {
+  //     return { "type": "Feature", "properties": { "numero_lig": line.nroStop, "variante": line.variantStop, "mode": line.mode, "nroLine": line.nroLine }, "geometry": { "type": "Point", "coordinates": coordinates } }
+  // }, 
+
   initLines: allStops => {
     let allLines = [];
     allStops.features.map(x => {
@@ -208,7 +234,24 @@ const mapFunctions = {
     );
   },
 
-  findStop: (line, stopCoordinates, precision) => {
+  // findStop: (line, stopCoordinates, precision) => {
+  //   return line[0].slice(
+  //     line[0].indexOf(
+  //       line[0].find(
+  //         x =>
+  //           mapFunctions.distance(
+  //             parseFloat(x[1]),
+  //             parseFloat(x[0]),
+  //             parseFloat(stopCoordinates[1]),
+  //             parseFloat(stopCoordinates[0]),
+  //             'K',
+  //           ) < precision,
+  //       ),
+  //     ),
+  //   );
+  // },
+
+    findStop: (line, stopCoordinates, precision) => {
     return line[0].slice(
       line[0].indexOf(
         line[0].find(
@@ -252,11 +295,19 @@ const mapFunctions = {
     }
   },
 
-  getStopCoordinates: (allStops, vehicle, selection) => {
+  // getStopCoordinates: (allStops, vehicle, selection) => {
+  //   return allStops.find(
+  //     stop =>
+  //       stop.properties.numero_lig === selection.nroStop &&
+  //       stop.properties.variante === selection.variantStop &&
+  //       stop.properties.stop_id.includes(vehicle.pointId),
+  //   );
+  // },
+
+    getStopCoordinates: (allStops, vehicle, lineId) => {
     return allStops.find(
       stop =>
-        stop.properties.numero_lig === selection.nroStop &&
-        stop.properties.variante === selection.variantStop &&
+        stop.properties.numero_lig === lineId &&
         stop.properties.stop_id.includes(vehicle.pointId),
     );
   },
@@ -265,6 +316,7 @@ const mapFunctions = {
     let getUrl =
       'https://opendata-api.stib-mivb.be/OperationMonitoring/4.0/VehiclePositionByLine/' +
       line;
+
      return axios
       .get(getUrl, {
         headers: {
@@ -276,10 +328,10 @@ const mapFunctions = {
         if (res.status === 200) {
           return res.data;
         } else {
-          return 'error';
+          return 'Error API Response not 200';
         }
       })
-      .catch(err => console.log('catch', err));
+      .catch(err => console.log('Error API Response: ', err));
   },
 };
 module.exports = mapFunctions;

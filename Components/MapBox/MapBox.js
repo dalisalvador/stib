@@ -54,7 +54,7 @@ const MapBox = ({...props}) => {
   }
 
   // console.log(geoJson, myLines);
-  //console.log(vehiculesGeoJson);
+  console.log(vehiculesGeoJson);
   
   return (
     <View style={{flex : 1}}>
@@ -73,7 +73,7 @@ const MapBox = ({...props}) => {
         followUserMode={'normal'}
         followUserLocation={true}
       />
-      {myLines.length > 0 ? (
+      {/* {myLines.length > 0 ? (
         <Fragment>
         <MapboxGL.ShapeSource id="myLines" shape={geoJson}>
               <MapboxGL.LineLayer
@@ -90,26 +90,31 @@ const MapBox = ({...props}) => {
                 style={iconStyles.stops}
           />
         </MapboxGL.ShapeSource>
-        {/* Temporal fix. Cant filter using Case expression. As a result need to create 3 shapesources */}
-        {/* <MapboxGL.ShapeSource id="vehicules" shape={vehiculesGeoJson}>
+
+        <MapboxGL.ShapeSource id="vehicules" shape={vehiculesGeoJson}>
          <MapboxGL.SymbolLayer
                 id="myvehicules"
                 minZoomLevel={12}
                 style={iconStyles.vehicules.tram}
           />
-         </MapboxGL.ShapeSource> */}
-         <MapboxGL.ShapeSource id="tram" shape={vehiculesGeoJson}>
+         </MapboxGL.ShapeSource>
+        
+         </Fragment>
+       
+      ) : null} */}
+      <MapboxGL.ShapeSource id="tram" shape={vehiculesGeoJson}>
          <MapboxGL.SymbolLayer
                 id="myTrams"
-                filter={['==', ['get', 'mode'], "Tram"]}
-                minZoomLevel={12}
-                style={iconStyles.vehicules.tram}
+                // filter={['==', ['get', 'mode'], "T"]}
+                minZoomLevel={10}
+                style={{iconImage: tramIcon,
+        iconAllowOverlap: true}}
           />
-         </MapboxGL.ShapeSource>
-                  <MapboxGL.ShapeSource id="metro" shape={vehiculesGeoJson}>
+      </MapboxGL.ShapeSource>
+                  {/* <MapboxGL.ShapeSource id="metro" shape={vehiculesGeoJson}>
          <MapboxGL.SymbolLayer
                 id="myMetros"
-                filter={['==', ['get', 'mode'], "Metro"]}
+                filter={['==', ['get', 'mode'], "M"]}
                 minZoomLevel={12}
                 style={iconStyles.vehicules.metro}
           />
@@ -117,15 +122,11 @@ const MapBox = ({...props}) => {
                   <MapboxGL.ShapeSource id="bus" shape={vehiculesGeoJson}>
          <MapboxGL.SymbolLayer
                 id="myBus"
-                filter={['==', ['get', 'mode'], "Bus"]}
+                filter={['==', ['get', 'mode'], "B"]}
                 minZoomLevel={12}
                 style={iconStyles.vehicules.bus}
           />
-         </MapboxGL.ShapeSource>
-         </Fragment>
-       
-      ) : null}
-
+      </MapboxGL.ShapeSource> */}
     <MapboxGL.UserLocation />
     </MapboxGL.MapView>
     <View style={{position: "absolute"}}>
