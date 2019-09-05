@@ -6,7 +6,7 @@
  * @flow
  */
 
-import React, {Fragment, useState, useEffect} from 'react';
+import React, {Fragment, useState, useEffect, useRef} from 'react';
 import {
   StyleSheet,
   View,
@@ -14,8 +14,6 @@ import {
   Dimensions,
   Text,
 } from 'react-native';
-
-// import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 
 import Geojson from 'react-native-geojson';
 import {FloatingAction} from 'react-native-floating-action';
@@ -27,6 +25,7 @@ import map from './assets/map';
 import allStops from './assets/info/stops';
 import lines from './assets/info/lines';
 import MapBox from './Components/MapBox/MapBox';
+import Toast, {DURATION} from 'react-native-easy-toast'
 
 const App = () => {
   const [marginBottom, setMarginBottom] = useState(1);
@@ -44,6 +43,7 @@ const App = () => {
     features: [],
   });
 
+  const toast = useRef(null)
   //Settings
   const [allVehicles, setAllVehicles] = useState(true)
 
@@ -64,6 +64,7 @@ const App = () => {
       addLineToGeoJson(response.newLine);
       //addVehiculesToGeoJson(response.vehicules)
     });
+    toast.current.show("line Added", 200)
   };
 
   const deleteLine = lineTodelete => {
@@ -222,6 +223,7 @@ const App = () => {
         />
         <ModalAdd visible={modalVisible} setModalVisible={setModalVisible} />
         <ModalSettings modalSettings={modalSettings} setModalSettings={setModalSettings} />
+        <Toast position='top' ref={toast}/>
       </Fragment>
     </AllLinesProvider>
   );
