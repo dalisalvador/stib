@@ -66,12 +66,15 @@ const App = () => {
 
 
   const addLine = selectedLine => {
+    console.log(selectedLine, myLines)
+    if(!myLines.find(line => line.selection.nroStop === selectedLine.nroStop &&  line.selection.variantStop === selectedLine.variantStop )) {
     map.addToMyLines(selectedLine).then(response => {
       setMyLines([...myLines, response.newLine]);
       addLineToGeoJson(response.newLine);
       editVehiclesGeoJson(selectedLine);
     });
     toast.current.show("line Added", 2000)
+    } else toast.current.show("Line already stored in 'myLines'", 2000)
   };
 
   const editVehiclesGeoJson = (line) =>{

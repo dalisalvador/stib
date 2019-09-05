@@ -14,7 +14,7 @@ const CardSettings = ({...props}) => {
       wrapperStyle={cardWrapperStyle}
       title="Settings">
        <View style={styles.body}>
-        <CustomRadio value={allVehicles} toggle={setAllVehicles} instruction={"Show only vehicules from myLines"}/>
+        <CustomRadio value={allVehicles} toggle={setAllVehicles} instruction={"Show all vehicles from all lines"}/>
         <CustomRadio value={showStopName} toggle={setShowStopName} instruction={"Show stop name"}/>
       </View>
       <View style={styles.button}>
