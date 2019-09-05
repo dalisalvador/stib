@@ -1,17 +1,23 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {Card, Button} from 'react-native-elements';
+import CustomRadio from "./Components/CustomRadio"
+import AllLinesContext from '../../allLinesContext';
 
 const CardSettings = ({...props}) => {
   const {setModalVisible, visible} = props;
-
+  const {allVehicules, setAllVehicules} = useContext(AllLinesContext);
+  
+  const toggle = () => {
+      setAllVehicules(!allVehicules)
+  }
   return (
     <Card
       containerStyle={cardContainer}
       wrapperStyle={cardWrapperStyle}
       title="Settings">
        <View style={styles.body}>
-        <Text>Settings Body</Text>
+        <CustomRadio value={allVehicules} toggle={toggle} instruction={"Show only vehicules from myLines"}/>
       </View>
       <View style={styles.button}>
         <Button
