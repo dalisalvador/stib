@@ -19,7 +19,7 @@ import metroIcon from '../../assets/img/metro.png';
 
 const MapBox = ({...props}) => {
   const {myLines, geoJson, vehiculesGeoJson, allStops, mapFunctions} = props;
-  const {allLines, addLine} = useContext(AllLinesContext);
+  const {allLines, addLine, allVehicles} = useContext(AllLinesContext);
 
   const mapBox = useRef(null)
 
@@ -92,6 +92,7 @@ const MapBox = ({...props}) => {
     return allStops.features.find(stop => stop.properties.numero_lig === numero_lig && stop.properties.variante === variante)   
   }
 
+  console.log(allVehicles)
   return (
     <View style={{flex : 1}}>
     <MapboxGL.MapView
@@ -132,6 +133,8 @@ const MapBox = ({...props}) => {
         </Fragment>
        
       ) : null}
+      {allVehicles ? 
+      <Fragment>
         <MapboxGL.ShapeSource id="tram" onPress={({ nativeEvent }) => showData(nativeEvent.payload.properties)} shape={vehiculesGeoJson}>
           <MapboxGL.SymbolLayer
             id="myTrams"
@@ -158,6 +161,7 @@ const MapBox = ({...props}) => {
             style={iconStyles.vehicules.bus}
          />
       </MapboxGL.ShapeSource>
+      </Fragment>: null}
     <MapboxGL.UserLocation />
     </MapboxGL.MapView>
     <View style={{position: "absolute"}}>

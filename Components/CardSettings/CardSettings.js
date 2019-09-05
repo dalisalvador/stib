@@ -6,10 +6,10 @@ import AllLinesContext from '../../allLinesContext';
 
 const CardSettings = ({...props}) => {
   const {setModalVisible, visible} = props;
-  const {allVehicules, setAllVehicules} = useContext(AllLinesContext);
+  const {allVehicles, setAllVehicles} = useContext(AllLinesContext);
   
   const toggle = () => {
-      setAllVehicules(!allVehicules)
+      setAllVehicles(!allVehicles)
   }
   return (
     <Card
@@ -17,7 +17,7 @@ const CardSettings = ({...props}) => {
       wrapperStyle={cardWrapperStyle}
       title="Settings">
        <View style={styles.body}>
-        <CustomRadio value={allVehicules} toggle={toggle} instruction={"Show only vehicules from myLines"}/>
+        <CustomRadio value={allVehicles} toggle={toggle} instruction={"Show only vehicules from myLines"}/>
       </View>
       <View style={styles.button}>
         <Button

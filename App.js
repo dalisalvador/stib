@@ -45,7 +45,7 @@ const App = () => {
   });
 
   //Settings
-  const [allVehicules, setAllVehicules] = useState(true)
+  const [allVehicles, setAllVehicles] = useState(true)
 
   useEffect(() => {
     setAllLines(map.initLines(allStops));
@@ -53,8 +53,8 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-  //  updateAllVehicleGeoJson(allLines)
-  //  setInterval(() => {updateAllVehicleGeoJson(allLines)}, 1000*31)
+   updateAllVehicleGeoJson(allLines)
+   setInterval(() => {updateAllVehicleGeoJson(allLines)}, 1000*31)
   }, [allLines]);
 
 
@@ -197,7 +197,7 @@ const App = () => {
  
   //console.log(vehiculesGeoJson, myLines)
   return (
-    <AllLinesProvider value={{allLines, myLines, deleteLine, addLine, allVehicules, setAllVehicules}}>
+    <AllLinesProvider value={{allLines, myLines, deleteLine, addLine, allVehicles, setAllVehicles}}>
       <Fragment>
         <View
           style={{
