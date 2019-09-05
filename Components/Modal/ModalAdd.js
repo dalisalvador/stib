@@ -12,8 +12,6 @@ import {
 
 import CardAdd from '../CardAdd/CardAdd';
 
-import {Button} from 'react-native-elements';
-
 const ModalAdd = ({...props}) => {
   const {visible, setModalVisible} = props;
   return (

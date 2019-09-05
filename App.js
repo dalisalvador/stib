@@ -20,6 +20,7 @@ import {
 import Geojson from 'react-native-geojson';
 import {FloatingAction} from 'react-native-floating-action';
 import ModalAdd from './Components/Modal/ModalAdd';
+import ModalSettings from './Components/Modal/ModalSettings';
 
 import {AllLinesProvider} from './allLinesContext';
 import map from './assets/map';
@@ -30,6 +31,7 @@ import MapBox from './Components/MapBox/MapBox';
 const App = () => {
   const [marginBottom, setMarginBottom] = useState(1);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalSettings, setModalSettings] = useState(false);
   const [mainPressed, setMainPressed] = useState(false);
   const [allLines, setAllLines] = useState();
   const [myLines, setMyLines] = useState([]);
@@ -48,8 +50,8 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-   updateAllVehicleGeoJson(allLines)
-   setInterval(() => {updateAllVehicleGeoJson(allLines)}, 1000*31)
+  //  updateAllVehicleGeoJson(allLines)
+  //  setInterval(() => {updateAllVehicleGeoJson(allLines)}, 1000*31)
   }, [allLines]);
 
 
@@ -172,6 +174,14 @@ const App = () => {
       position: 1,
     },
     {
+      text: 'Settings',
+      icon: {
+        uri: 'https://www.flaticon.com/premium-icon/icons/svg/201/201531.svg',
+      },
+      name: 'settings',
+      position: 1,
+    },
+    {
       text: 'About',
       icon: {
         uri: 'https://www.flaticon.com/premium-icon/icons/svg/205/205577.svg',
@@ -202,10 +212,13 @@ const App = () => {
             if (name === 'addLine') {
               setMainPressed(false);
               setModalVisible(true);
+            } else if(name === 'settings'){
+              setModalSettings(true);
             }
           }}
         />
         <ModalAdd visible={modalVisible} setModalVisible={setModalVisible} />
+        <ModalSettings modalSettings={modalSettings} setModalSettings={setModalSettings} />
       </Fragment>
     </AllLinesProvider>
   );
