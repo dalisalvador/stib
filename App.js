@@ -6,7 +6,7 @@
  * @flow
  */
 
-import React, {Fragment, useState, useEffect, useRef} from 'react';
+import React, {Fragment, useState, useEffect, useRef, useInterval} from 'react';
 import {
   StyleSheet,
   View,
@@ -34,6 +34,13 @@ const App = () => {
   const [mainPressed, setMainPressed] = useState(false);
   const [allLines, setAllLines] = useState();
   const [myLines, setMyLines] = useState([]);
+
+  //Need this for setInterval
+  const allLinesRef = useRef(allLines);
+  allLinesRef.current = allLines;
+  const myLinesRef = useRef(myLines);
+  myLinesRef.current = myLines;
+
   const [geoJson, setGeoJson] = useState({
     type: 'FeatureCollection',
     features: [],
@@ -49,12 +56,11 @@ const App = () => {
 
   useEffect(() => {
     setAllLines(map.initLines(allStops));
-   // setInterval(() => {updateAllVehiculeGeoJson()}, 1000*10)
   }, []);
 
   useEffect(() => {
-   updateAllVehicleGeoJson(allLines)
-   setInterval(() => {updateAllVehicleGeoJson(allLines)}, 1000*31)
+    updateAllVehicleGeoJson(allLinesRef.current, myLinesRef.current);
+    setInterval(() => {updateAllVehicleGeoJson(allLinesRef.current, myLinesRef.current)}, 1000*35)
   }, [allLines]);
 
 
@@ -62,10 +68,27 @@ const App = () => {
     map.addToMyLines(selectedLine).then(response => {
       setMyLines([...myLines, response.newLine]);
       addLineToGeoJson(response.newLine);
-      //addVehiculesToGeoJson(response.vehicules)
+      editVehiclesGeoJson(selectedLine);
     });
-    toast.current.show("line Added", 200)
+    toast.current.show("line Added", 2000)
   };
+
+  const editVehiclesGeoJson = (line) =>{
+    let newFeatures = vehiculesGeoJson.features;
+    vehiculesGeoJson.features.map((vehicle,i) => {
+      if(
+      vehicle.properties.mode === line.mode[0] &&
+      vehicle.properties.numero_lig === line.nroStop &&
+      vehicle.properties.variante === line.variantStop) {
+        newFeatures[i].properties.myLine = 1;
+      }
+    })
+
+    setVehiculesGeoJson({
+      ...vehiculesGeoJson,
+      features: newFeatures
+    })
+  }
 
   const deleteLine = lineTodelete => {
     setMyLines([
@@ -106,40 +129,36 @@ const App = () => {
       });
   }
 
-  const updateVehiculeGeoJson = async () => {
-    let updated;
-    if(myLines.length > 0) {
-      updated = myLines.map(async line => {
-                  return new Promise((resolve, reject)=>{
-                      let updated = map.updateVehicules(line.selection, line.line.stops);
-                      if(updated) resolve(updated)
-                      else reject("error")
-                  })
-      })
-      
-      Promise.all(updated).then(features => {
-        setVehiculesGeoJson({
-              ...vehiculesGeoJson,
-              features: features.reduce((a,b)=>{
-          return a.concat(b)
-        }),
-        })
-      })
-
-    }
-  }
-
-  const  updateAllVehicleGeoJson = async () => {
+  const updateAllVehicleGeoJson = async (allLines, myLines) => {
     if(allLines){
       let responses = await map.updateAllVehicles(chunkArray(allLines.map(line => line.nroStop).filter((x,i,arr) =>arr.indexOf(x)=== i),10));
 
       Promise.all(responses).then(features => 
-        setVehiculesGeoJson({
-           ...vehiculesGeoJson,
-           features: features.reduce((a,b)=>{
-            return a.concat(b)
+        
+        {
+          //add "myLine=1" property if vahicule exists in myLines
+          let concatenatedFeatures = features.reduce((a,b)=>{
+              return a.concat(b)
           })
-        }))
+          concatenatedFeatures.map((vehicle,i) => {
+            myLines.map(line => {
+                if(vehicle.properties.numero_lig === line.selection.nroStop &&
+                   vehicle.properties.variante === line.selection.variantStop &&
+                    vehicle.properties.mode === line.selection.mode[0]
+                 )
+                 {
+                   concatenatedFeatures[i].properties.myLine = 1
+                 }
+                 
+            })
+          })
+
+          setVehiculesGeoJson({
+            ...vehiculesGeoJson,
+            features: concatenatedFeatures
+          })  
+          }
+        )
     }
    }
   
@@ -196,7 +215,7 @@ const App = () => {
   ];
 
  
-  //console.log(vehiculesGeoJson, myLines)
+  console.log(myLines)
   return (
     <AllLinesProvider value={{allLines, myLines, deleteLine, addLine, allVehicles, setAllVehicles}}>
       <Fragment>
@@ -223,7 +242,7 @@ const App = () => {
         />
         <ModalAdd visible={modalVisible} setModalVisible={setModalVisible} />
         <ModalSettings modalSettings={modalSettings} setModalSettings={setModalSettings} />
-        <Toast position='top' ref={toast}/>
+        <Toast position='bottom' ref={toast}/>
       </Fragment>
     </AllLinesProvider>
   );

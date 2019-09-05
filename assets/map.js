@@ -22,15 +22,6 @@ const mapFunctions = {
       selection.variantStop,
     );
 
-    let icon =
-      selection.mode === 'Tram'
-        ? mapFunctions.icons.tram
-        : selection.mode === 'Bus'
-        ? mapFunctions.icons.bus
-        : selection.mode === 'Metro'
-        ? mapFunctions.icons.metro
-        : mapFunctions.icons.bus;
-
     return {
       newLine:{
       line: {
@@ -39,7 +30,6 @@ const mapFunctions = {
         stops: newStops,
       },
       selection,
-      iconType: icon,
       }
     };
   },
@@ -100,6 +90,7 @@ const mapFunctions = {
   },
 
   createVehicleFeature: (coordinates, stop) => {
+    
       return { "type": "Feature", "properties": { "numero_lig": stop.properties.numero_lig, "variante": stop.properties.variante, "mode": stop.properties.mode }, "geometry": { "type": "Point", "coordinates": coordinates } }
   }, 
 
