@@ -8,22 +8,15 @@ import {
   StyleSheet,
 } from 'react-native';
 
-import {Button} from 'react-native-elements';
+import CardSettings from '../CardSettings/CardSettings';
 
 const ModalSettings = ({...props}) => {
   const {modalSettings, setModalSettings} = props;
   return (
     <Modal animationType="slide" visible={modalSettings}>
-      <View style={styles.modalBody}>
-        <Text>Settings</Text>
-      </View>
-      <View style={styles.button}>
-        <Button
-          raised
-          title="Close"
-          onPress={() => setModalSettings(!modalSettings)}
-        />
-      </View>
+        <View style={styles.modalBody}>
+            <CardSettings setModalVisible={setModalSettings} visible={modalSettings} />
+        </View>
     </Modal>
   );
 };
