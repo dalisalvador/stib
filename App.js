@@ -52,7 +52,8 @@ const App = () => {
 
   const toast = useRef(null)
   //Settings
-  const [allVehicles, setAllVehicles] = useState(true)
+  const [allVehicles, setAllVehicles] = useState(false)
+  const [showStopName, setShowStopName] = useState(false)
 
   useEffect(() => {
     setAllLines(map.initLines(allStops));
@@ -214,10 +215,8 @@ const App = () => {
     }
   ];
 
- 
-  console.log(myLines)
   return (
-    <AllLinesProvider value={{allLines, myLines, deleteLine, addLine, allVehicles, setAllVehicles}}>
+    <AllLinesProvider value={{allLines, myLines, deleteLine, addLine, allVehicles, setAllVehicles, showStopName, setShowStopName}}>
       <Fragment>
         <View
           style={{

@@ -92,7 +92,7 @@ const MapBox = ({...props}) => {
     return allStops.features.find(stop => stop.properties.numero_lig === numero_lig && stop.properties.variante === variante)   
   }
 
-  console.log(allVehicles)
+
   return (
     <View style={{flex : 1}}>
     <MapboxGL.MapView
@@ -134,6 +134,7 @@ const MapBox = ({...props}) => {
                 minZoomLevel={12}
                 style={iconStyles.stops}
           />
+          <MapboxGL.Callout title="This is a sample" />
         </MapboxGL.ShapeSource>
         </Fragment>
        

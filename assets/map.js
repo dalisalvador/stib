@@ -38,8 +38,9 @@ const mapFunctions = {
     return new Promise((resolve, reject) => {
            mapFunctions.getLine(stops.join('%2C')).then(data => {
             if (data) resolve(data)
-            else reject ("error")
-          })
+            //else reject ("error")
+          }).
+          catch(err => reject(err))
     });
   },
 
