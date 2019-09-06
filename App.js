@@ -66,27 +66,36 @@ const App = () => {
 
 
   const addLine = selectedLine => {
-    console.log(selectedLine, myLines)
     if(!myLines.find(line => line.selection.nroStop === selectedLine.nroStop &&  line.selection.variantStop === selectedLine.variantStop )) {
     map.addToMyLines(selectedLine).then(response => {
       setMyLines([...myLines, response.newLine]);
       addLineToGeoJson(response.newLine);
-      editVehiclesGeoJson(selectedLine);
+      editVehiclesGeoJson(selectedLine, "add");
     });
     toast.current.show("line Added", 2000)
     } else toast.current.show("Line already stored in 'myLines'", 2000)
   };
 
-  const editVehiclesGeoJson = (line) =>{
+  const editVehiclesGeoJson = (line, action) =>{
     let newFeatures = vehiculesGeoJson.features;
-    vehiculesGeoJson.features.map((vehicle,i) => {
-      if(
-      vehicle.properties.mode === line.mode[0] &&
-      vehicle.properties.numero_lig === line.nroStop &&
+    if(action === "add"){
+        vehiculesGeoJson.features.map((vehicle,i) => {
+        if(vehicle.properties.numero_lig === line.nroStop &&
+        vehicle.properties.variante === line.variantStop) {
+          newFeatures[i].properties.myLine = 1;
+        }
+      })
+
+    }
+    else {
+      vehiculesGeoJson.features.map((vehicle,i) => {
+      if(vehicle.properties.numero_lig === line.nroStop &&
       vehicle.properties.variante === line.variantStop) {
-        newFeatures[i].properties.myLine = 1;
-      }
-    })
+        console.log(i)
+        newFeatures[i].properties.myLine = 0;
+        }
+      })
+    }        
 
     setVehiculesGeoJson({
       ...vehiculesGeoJson,
@@ -95,12 +104,11 @@ const App = () => {
   }
 
   const deleteLine = lineTodelete => {
+    deleteLineFromGeoJson(lineTodelete);
+    editVehiclesGeoJson(lineTodelete, "delete");
     setMyLines([
       ...myLines.filter((line, i) => myLines.indexOf(lineTodelete) !== i),
     ]);
-    deleteLineFromGeoJson(lineTodelete);
-    //updateVehiculeGeoJson();
-    //deleteStopsFromGeoJson(lineTodelete);
   };
 
   const addLineToGeoJson = line => {
@@ -218,6 +226,7 @@ const App = () => {
     }
   ];
 
+console.log(vehiculesGeoJson)
   return (
     <AllLinesProvider value={{allLines, myLines, deleteLine, addLine, allVehicles, setAllVehicles, showStopName, setShowStopName}}>
       <Fragment>
