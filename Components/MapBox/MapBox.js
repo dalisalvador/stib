@@ -1,14 +1,14 @@
-import React, {useEffect, Fragment, useRef, useContext} from 'react';
+import React, {useEffect, Fragment, useRef, useContext, useState} from 'react';
 import MapboxGL from '@react-native-mapbox-gl/maps';
 import {
   StyleSheet,
   View,
   PermissionsAndroid,
   Dimensions,
-  Text
+  Text,
 } from 'react-native';
 
-import {Button} from "react-native-elements"
+import {Button} from 'react-native-elements';
 
 import AllLinesContext from '../../allLinesContext';
 
@@ -19,12 +19,13 @@ import metroIcon from '../../assets/img/metro.png';
 
 const MapBox = ({...props}) => {
   const {myLines, geoJson, vehiculesGeoJson, allStops, mapFunctions} = props;
+  const [permissions, setPermissions] = useState(false);
   const {allLines, addLine, allVehicles} = useContext(AllLinesContext);
 
-  const mapBox = useRef(null)
+  const mapBox = useRef(null);
 
   useEffect(() => {
-    getPermissions();
+    setPermissions(getPermissions());
   }, []);
 
   const getPermissions = async () => {
@@ -36,150 +37,185 @@ const MapBox = ({...props}) => {
   );
 
   const iconStyles = {
-    stops: { 
-          iconImage: stopIcon,
-          iconAllowOverlap: true,
-          iconSize: 0.1
+    stops: {
+      iconImage: stopIcon,
+      iconAllowOverlap: true,
+      iconSize: 0.1,
     },
-    vehicules:{
-      tram:{
+    vehicules: {
+      tram: {
         iconImage: tramIcon,
         iconAllowOverlap: true,
       },
-      metro:{
+      metro: {
         iconImage: metroIcon,
         iconAllowOverlap: true,
       },
-      bus:{
+      bus: {
         iconImage: busIcon,
         iconAllowOverlap: true,
-      }
-    }
-  }
+      },
+    },
+  };
 
-  const showData = (vehicule) => {
-    let stopShape = getStopShape(vehicule)
-    let selection =   {
-          nroStop: stopShape.properties.numero_lig,
-          variantStop: stopShape.properties.variante,
-          direction: stopShape.properties.terminus,
-          nroLine: mapFunctions.setVariantLine(
-            stopShape.properties.numero_lig,
-            stopShape.properties.mode,
-          ),
-          variantLine: stopShape.properties.variante === '1' ? 901 : 902,
-          mode:
-            stopShape.properties.mode === 'B'
-              ? 'Bus'
-              : stopShape.properties.mode === 'T'
-              ? 'Tram'
-              : stopShape.properties.mode === 'M'
-              ? 'Metro'
-              : null,
-          icon:
-            stopShape.properties.mode === 'B'
-              ? mapFunctions.icons.bus
-              : stopShape.properties.mode === 'T'
-              ? mapFunctions.icons.tram
-              : stopShape.properties.mode === 'M'
-              ? mapFunctions.icons.metro
-              : mapFunctions.icons.bus,
-        }
-    addLine(selection)
-  }
+  const showData = vehicule => {
+    let stopShape = getStopShape(vehicule);
+    let selection = {
+      nroStop: stopShape.properties.numero_lig,
+      variantStop: stopShape.properties.variante,
+      direction: stopShape.properties.terminus,
+      nroLine: mapFunctions.setVariantLine(
+        stopShape.properties.numero_lig,
+        stopShape.properties.mode,
+      ),
+      variantLine: stopShape.properties.variante === '1' ? 901 : 902,
+      mode:
+        stopShape.properties.mode === 'B'
+          ? 'Bus'
+          : stopShape.properties.mode === 'T'
+          ? 'Tram'
+          : stopShape.properties.mode === 'M'
+          ? 'Metro'
+          : null,
+      icon:
+        stopShape.properties.mode === 'B'
+          ? mapFunctions.icons.bus
+          : stopShape.properties.mode === 'T'
+          ? mapFunctions.icons.tram
+          : stopShape.properties.mode === 'M'
+          ? mapFunctions.icons.metro
+          : mapFunctions.icons.bus,
+    };
+    addLine(selection);
+  };
 
   const getStopShape = ({mode, numero_lig, variante}) => {
-    return allStops.features.find(stop => stop.properties.numero_lig === numero_lig && stop.properties.variante === variante)   
-  }
-
-
-  return (
-    <View style={{flex : 1}}>
-    <MapboxGL.MapView
-      ref={mapBox}
-      compassEnabled={true}
-      styleURL={MapboxGL.StyleURL.Light}
-      // onDidFinishLoadingMap={()=>alert('onDidFinishLoadingMap')}
-      // onDidFinishRenderingFrame={()=>alert('onDidFinishRenderingFrame')}
-      // onDidFinishRenderingMap={()=>alert('onDidFinishRenderingMap')}
-      // onDidFinishRenderingMapFully={()=>alert('onDidFinishRenderingMapFully')}
-      // onDidFinishLoadingStyle={()=>alert('onDidFinishLoadingStyle')}
-      style={styles.map}
-      userTrackingMode={1}
-      showUserLocation={true}
-      pitchEnabled={true}>
-      
-      <MapboxGL.Camera
-        zoomLevel={30}
-        // centerCoordinate={[this.state.longitude, this.state.latitude]}
-        followUserMode={'normal'}
-        followUserLocation={true}
-      />
-      {myLines.length > 0 ? (
-        <Fragment>
-        <MapboxGL.ShapeSource id="myLines" shape={geoJson}>
-              <MapboxGL.LineLayer
-                // key={i}
-                belowLayerID={"myTrams"}
-                id="lines"
-                style={{
-                  lineColor: ['get', 'COLOR_HEX'],
-                  lineWidth: 5,
-                }}
-              />
-          <MapboxGL.SymbolLayer
-                belowLayerID={"myTrams"}
-                layerIndex={2}
-                id="symbolLocationSymbols"
-                minZoomLevel={12}
-                style={iconStyles.stops}
+    return allStops.features.find(
+      stop =>
+        stop.properties.numero_lig === numero_lig &&
+        stop.properties.variante === variante,
+    );
+  };
+  if (permissions)
+    return (
+      <View style={{flex: 1}}>
+        <MapboxGL.MapView
+          ref={mapBox}
+          compassEnabled={true}
+          styleURL={MapboxGL.StyleURL.Light}
+          // onDidFinishLoadingMap={()=>alert('onDidFinishLoadingMap')}
+          // onDidFinishRenderingFrame={()=>alert('onDidFinishRenderingFrame')}
+          // onDidFinishRenderingMap={()=>alert('onDidFinishRenderingMap')}
+          // onDidFinishRenderingMapFully={()=>alert('onDidFinishRenderingMapFully')}
+          // onDidFinishLoadingStyle={()=>alert('onDidFinishLoadingStyle')}
+          style={styles.map}
+          userTrackingMode={1}
+          showUserLocation={true}
+          pitchEnabled={true}>
+          <MapboxGL.Camera
+            zoomLevel={30}
+            // centerCoordinate={[this.state.longitude, this.state.latitude]}
+            followUserMode={'normal'}
+            followUserLocation={true}
           />
-          <MapboxGL.Callout title="This is a sample" />
-        </MapboxGL.ShapeSource>
-        </Fragment>
-       
-      ) : null}
-        <MapboxGL.ShapeSource id="tram" onPress={({ nativeEvent }) => showData(nativeEvent.payload.properties)} shape={vehiculesGeoJson}>
-          <MapboxGL.SymbolLayer
-            id="myTrams"
-            filter={allVehicles ? ['==', ['get', 'mode'], "T"] : ["all", ['==', ['get', 'mode'], "T"], ['==', ['get', 'myLine'], 1]]}
-            minZoomLevel={10}
-            style={iconStyles.vehicules.tram}
-          />
-         </MapboxGL.ShapeSource>
-        <MapboxGL.ShapeSource id="metro" onPress={({ nativeEvent }) => showData(nativeEvent.payload.properties)} shape={vehiculesGeoJson}>
-          <MapboxGL.SymbolLayer
-            aboveLayerID={"myTrams"}
-            id="myMetros"
-            filter={allVehicles ? ['==', ['get', 'mode'], "M"] : ["all", ['==', ['get', 'mode'], "M"], ['==', ['get', 'myLine'], 1]]}
-            minZoomLevel={10}
-            style={iconStyles.vehicules.metro}
-          />
-        </MapboxGL.ShapeSource>
-        <MapboxGL.ShapeSource id="bus" onPress={({ nativeEvent }) => showData(nativeEvent.payload.properties)} shape={vehiculesGeoJson}>
-        <MapboxGL.SymbolLayer
-            aboveLayerID={"myTrams"}
-            id="myBus"
-            filter={allVehicles ? ['==', ['get', 'mode'], "B"] : ["all", ['==', ['get', 'mode'], "B"], ['==', ['get', 'myLine'], 1]]}
-            minZoomLevel={10}
-            style={iconStyles.vehicules.bus}
-         />
-      </MapboxGL.ShapeSource>
-
-       {/* <MapboxGL.ShapeSource id="tram" onPress={({ nativeEvent }) => showData(nativeEvent.payload.properties)} shape={vehiculesGeoJson}>
-          <MapboxGL.SymbolLayer
-            id="myTrams"
-            filter={allVehicles ? ['==', ['get', 'mode'], "T"] : ["all", ['==', ['get', 'mode'], "T"], ['==', ['get', 'myLine'], 1]]}
-            minZoomLevel={10}
-            style={iconStyles.vehicules.tram}
-          />
-         </MapboxGL.ShapeSource> */}
-
-
-    <MapboxGL.UserLocation />
-    </MapboxGL.MapView>
-    </View>
-  );
+          {myLines.length > 0 ? (
+            <Fragment>
+              <MapboxGL.ShapeSource id="myLines" shape={geoJson}>
+                <MapboxGL.LineLayer
+                  // key={i}
+                  belowLayerID={'myTrams'}
+                  id="lines"
+                  style={{
+                    lineColor: ['get', 'COLOR_HEX'],
+                    lineWidth: 5,
+                  }}
+                />
+                <MapboxGL.SymbolLayer
+                  belowLayerID={'myTrams'}
+                  layerIndex={2}
+                  id="symbolLocationSymbols"
+                  minZoomLevel={12}
+                  style={iconStyles.stops}
+                />
+                <MapboxGL.Callout title="This is a sample" />
+              </MapboxGL.ShapeSource>
+            </Fragment>
+          ) : null}
+          <MapboxGL.ShapeSource
+            id="tram"
+            onPress={({nativeEvent}) =>
+              showData(nativeEvent.payload.properties)
+            }
+            shape={vehiculesGeoJson}>
+            <MapboxGL.SymbolLayer
+              id="myTrams"
+              filter={
+                allVehicles
+                  ? ['==', ['get', 'mode'], 'T']
+                  : [
+                      'all',
+                      ['==', ['get', 'mode'], 'T'],
+                      ['==', ['get', 'myLine'], 1],
+                    ]
+              }
+              minZoomLevel={10}
+              style={iconStyles.vehicules.tram}
+            />
+          </MapboxGL.ShapeSource>
+          <MapboxGL.ShapeSource
+            id="metro"
+            onPress={({nativeEvent}) =>
+              showData(nativeEvent.payload.properties)
+            }
+            shape={vehiculesGeoJson}>
+            <MapboxGL.SymbolLayer
+              aboveLayerID={'myTrams'}
+              id="myMetros"
+              filter={
+                allVehicles
+                  ? ['==', ['get', 'mode'], 'M']
+                  : [
+                      'all',
+                      ['==', ['get', 'mode'], 'M'],
+                      ['==', ['get', 'myLine'], 1],
+                    ]
+              }
+              minZoomLevel={10}
+              style={iconStyles.vehicules.metro}
+            />
+          </MapboxGL.ShapeSource>
+          <MapboxGL.ShapeSource
+            id="bus"
+            onPress={({nativeEvent}) =>
+              showData(nativeEvent.payload.properties)
+            }
+            shape={vehiculesGeoJson}>
+            <MapboxGL.Animated.SymbolLayer
+              aboveLayerID={'myTrams'}
+              id="myBus"
+              filter={
+                allVehicles
+                  ? ['==', ['get', 'mode'], 'B']
+                  : [
+                      'all',
+                      ['==', ['get', 'mode'], 'B'],
+                      ['==', ['get', 'myLine'], 1],
+                    ]
+              }
+              minZoomLevel={10}
+              style={iconStyles.vehicules.bus}
+            />
+          </MapboxGL.ShapeSource>
+          <MapboxGL.UserLocation />
+        </MapboxGL.MapView>
+      </View>
+    );
+  else
+    return (
+      <View>
+        <Text>Not allowed</Text>
+      </View>
+    );
 };
 
 const styles = StyleSheet.create({

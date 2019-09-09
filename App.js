@@ -25,6 +25,7 @@ import map from './assets/map';
 import allStops from './assets/info/stops';
 import lines from './assets/info/lines';
 import MapBox from './Components/MapBox/MapBox';
+import MapBoxAnimated from './Components/MapBox/MapBoxAnimated';
 import Toast, {DURATION} from 'react-native-easy-toast';
 
 const App = () => {
@@ -261,13 +262,14 @@ const App = () => {
             width: '100%',
             height: '100%',
           }}>
-          <MapBox
+          {/* <MapBox
             myLines={myLines}
             geoJson={geoJson}
             vehiculesGeoJson={vehiculesGeoJson}
             allStops={allStops}
             mapFunctions={map}
-          />
+          /> */}
+          <MapBoxAnimated />
         </View>
         <FloatingAction
           actions={actions}
