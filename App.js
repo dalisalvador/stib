@@ -25,6 +25,7 @@ import map from './assets/map';
 import allStops from './assets/info/stops';
 import lines from './assets/info/lines';
 import MapBox from './Components/MapBox/MapBox';
+import MapBoxAnimated from './Components/MapBox/MapBoxAnimated';
 import Toast, {DURATION} from 'react-native-easy-toast';
 
 const App = () => {
@@ -65,12 +66,12 @@ const App = () => {
     setAllLines(map.initLines(allStops));
   }, []);
 
-  useEffect(() => {
-    updateAllVehicleGeoJson(allLinesRef.current, myLinesRef.current);
-    setInterval(() => {
-      updateAllVehicleGeoJson(allLinesRef.current, myLinesRef.current);
-    }, 1000 * 35);
-  }, [allLines]);
+  // useEffect(() => {
+  //   updateAllVehicleGeoJson(allLinesRef.current, myLinesRef.current);
+  //   setInterval(() => {
+  //     updateAllVehicleGeoJson(allLinesRef.current, myLinesRef.current);
+  //   }, 1000 * 35);
+  // }, [allLines]);
 
   const addLine = selectedLine => {
     if (
@@ -261,13 +262,14 @@ const App = () => {
             width: '100%',
             height: '100%',
           }}>
-          <MapBox
+          {/* <MapBox
             myLines={myLines}
             geoJson={geoJson}
             vehiculesGeoJson={vehiculesGeoJson}
             allStops={allStops}
             mapFunctions={map}
-          />
+          /> */}
+          {/* <MapBoxAnimated /> */}
         </View>
         <FloatingAction
           actions={actions}

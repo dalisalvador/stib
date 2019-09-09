@@ -6,6 +6,7 @@ import Search from '../SelectLine/Components/Search/Search';
 import ListResults from './Components/ListResults/ListResults';
 import MyLines from './Components/MyLines/MyLines';
 import {Icon} from 'react-native-elements';
+import MyLinesAnimated from './Components/MyLines/MyLinesAnimated';
 
 // implemented without image with header
 const CardAdd = ({...props}) => {
@@ -25,7 +26,8 @@ const CardAdd = ({...props}) => {
         {query ? (
           <ListResults query={query} resetQuery={resetQuery} />
         ) : (
-          <MyLines />
+          <MyLinesAnimated />
+          // <MyLines />
         )}
       </View>
       <View style={styles.button}>
