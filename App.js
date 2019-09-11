@@ -1,11 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
-
 import React, {Fragment, useState, useEffect, useRef, useInterval} from 'react';
 import {
   StyleSheet,
@@ -27,6 +19,8 @@ import lines from './assets/info/lines';
 import MapBox from './Components/MapBox/MapBox';
 import MapBoxAnimated from './Components/MapBox/MapBoxAnimated';
 import Toast, {DURATION} from 'react-native-easy-toast';
+import Timer from './Components/Timer/Timer';
+import ProgressRing from './Components/Timer/Components/ProgressRing';
 
 const App = () => {
   const [marginBottom, setMarginBottom] = useState(1);
@@ -261,6 +255,8 @@ const App = () => {
           style={{
             width: '100%',
             height: '100%',
+            flex: 1,
+            backgroundColor: 'white',
           }}>
           {/* <MapBox
             myLines={myLines}
@@ -270,6 +266,7 @@ const App = () => {
             mapFunctions={map}
           /> */}
           {/* <MapBoxAnimated /> */}
+          <Timer />
         </View>
         <FloatingAction
           actions={actions}
