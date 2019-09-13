@@ -22,6 +22,91 @@ import Toast, {DURATION} from 'react-native-easy-toast';
 import Timer from './Components/Timer/Timer';
 import ProgressRing from './Components/Timer/Components/ProgressRing';
 
+import Animated, {Easing} from 'react-native-reanimated';
+const {
+  Clock,
+  Value,
+  set,
+  cond,
+  startClock,
+  clockRunning,
+  timing,
+  debug,
+  stopClock,
+  block,
+  call,
+  eq,
+} = Animated;
+
+const useAnimation = clock => {
+  const [background, setBackground] = useState('blue');
+  const [lastBackground, setLastBackground] = useState('white');
+
+  const runTiming = (clock, value, dest) => {
+    const state = {
+      finished: new Value(0),
+      position: new Value(0),
+      time: new Value(0),
+      frameTime: new Value(0),
+    };
+
+    const config = {
+      duration: 15000,
+      toValue: new Value(0),
+      easing: Easing.inOut(Easing.ease),
+    };
+
+    return block([
+      cond(
+        clockRunning(clock),
+        [set(config.toValue, dest)],
+        [
+          cond(eq(state.position._value, 0), [
+            call([], () => alert('CLock Not Runing')),
+            set(state.finished, 0),
+            set(state.time, 0),
+            set(state.position, value),
+            set(state.frameTime, 0),
+            set(config.toValue, dest),
+            startClock(clock),
+          ]),
+        ],
+      ),
+      timing(clock, state, config),
+      cond(state.finished, [
+        call([], () => alert('Finished')),
+        set(state.finished, 0),
+        call([], () => generateBackgorund()),
+        set(state.time, 0),
+        set(state.position, value),
+        set(state.frameTime, 0),
+        set(config.toValue, dest),
+        startClock(clock),
+      ]),
+      state.position,
+    ]);
+  };
+
+  const generateBackgorund = () => {
+    setLastBackground(background);
+    setBackground(
+      '#' +
+        Math.random()
+          .toString(16)
+          .slice(2, 8),
+    );
+  };
+
+  return {
+    progress: runTiming(clock, 0, 100),
+    background,
+    generateBackgorund,
+    lastBackground,
+  };
+};
+
+const clock = new Clock();
+
 const App = () => {
   const [marginBottom, setMarginBottom] = useState(1);
   const [modalVisible, setModalVisible] = useState(false);
@@ -29,6 +114,13 @@ const App = () => {
   const [mainPressed, setMainPressed] = useState(false);
   const [allLines, setAllLines] = useState();
   const [myLines, setMyLines] = useState([]);
+
+  const {
+    progress,
+    background,
+    generateBackgorund,
+    lastBackground,
+  } = useAnimation(clock);
 
   //Need this for setInterval
   const allLinesRef = useRef(allLines);
@@ -237,7 +329,6 @@ const App = () => {
     },
   ];
 
-  console.log(vehiculesGeoJson);
   return (
     <AllLinesProvider
       value={{
@@ -266,8 +357,13 @@ const App = () => {
             mapFunctions={map}
           /> */}
           {/* <MapBoxAnimated /> */}
-          <Timer />
         </View>
+        <Timer
+          progress={progress}
+          generateBackgorund={generateBackgorund}
+          background={background}
+          lastBackground={lastBackground}
+        />
         <FloatingAction
           actions={actions}
           overlayColor={'rgba(0, 0, 0, 0)'}
