@@ -8,8 +8,6 @@ import {
   Text,
 } from 'react-native';
 
-import {Button} from 'react-native-elements';
-
 import AllLinesContext from '../../allLinesContext';
 
 import stopIcon from '../../assets/img/stop.png';
@@ -18,9 +16,16 @@ import busIcon from '../../assets/img/bus.png';
 import metroIcon from '../../assets/img/metro.png';
 
 const MapBox = ({...props}) => {
-  const {myLines, geoJson, vehiculesGeoJson, allStops, mapFunctions} = props;
+  const {
+    myLines,
+    geoJson,
+    vehiculesGeoJson,
+    myVehiculesGeoJson,
+    allStops,
+    mapFunctions,
+  } = props;
+  const {addLine, allVehicles} = useContext(AllLinesContext);
   const [permissions, setPermissions] = useState(false);
-  const {allLines, addLine, allVehicles} = useContext(AllLinesContext);
 
   const mapBox = useRef(null);
 
@@ -96,25 +101,21 @@ const MapBox = ({...props}) => {
         stop.properties.variante === variante,
     );
   };
-  if (permissions)
-    return (
+
+  console.log(myVehiculesGeoJson, allVehicles);
+  return (
+    permissions && (
       <View style={{flex: 1}}>
         <MapboxGL.MapView
           ref={mapBox}
           compassEnabled={true}
           styleURL={MapboxGL.StyleURL.Light}
-          // onDidFinishLoadingMap={()=>alert('onDidFinishLoadingMap')}
-          // onDidFinishRenderingFrame={()=>alert('onDidFinishRenderingFrame')}
-          // onDidFinishRenderingMap={()=>alert('onDidFinishRenderingMap')}
-          // onDidFinishRenderingMapFully={()=>alert('onDidFinishRenderingMapFully')}
-          // onDidFinishLoadingStyle={()=>alert('onDidFinishLoadingStyle')}
           style={styles.map}
           userTrackingMode={1}
           showUserLocation={true}
           pitchEnabled={true}>
           <MapboxGL.Camera
             zoomLevel={30}
-            // centerCoordinate={[this.state.longitude, this.state.latitude]}
             followUserMode={'normal'}
             followUserLocation={true}
           />
@@ -141,81 +142,124 @@ const MapBox = ({...props}) => {
               </MapboxGL.ShapeSource>
             </Fragment>
           ) : null}
-          <MapboxGL.ShapeSource
-            id="tram"
-            onPress={({nativeEvent}) =>
-              showData(nativeEvent.payload.properties)
-            }
-            shape={vehiculesGeoJson}>
-            <MapboxGL.SymbolLayer
-              id="myTrams"
-              filter={
-                allVehicles
-                  ? ['==', ['get', 'mode'], 'T']
-                  : [
-                      'all',
-                      ['==', ['get', 'mode'], 'T'],
-                      ['==', ['get', 'myLine'], 1],
-                    ]
-              }
-              minZoomLevel={10}
-              style={iconStyles.vehicules.tram}
-            />
-          </MapboxGL.ShapeSource>
-          <MapboxGL.ShapeSource
-            id="metro"
-            onPress={({nativeEvent}) =>
-              showData(nativeEvent.payload.properties)
-            }
-            shape={vehiculesGeoJson}>
-            <MapboxGL.SymbolLayer
-              aboveLayerID={'myTrams'}
-              id="myMetros"
-              filter={
-                allVehicles
-                  ? ['==', ['get', 'mode'], 'M']
-                  : [
-                      'all',
-                      ['==', ['get', 'mode'], 'M'],
-                      ['==', ['get', 'myLine'], 1],
-                    ]
-              }
-              minZoomLevel={10}
-              style={iconStyles.vehicules.metro}
-            />
-          </MapboxGL.ShapeSource>
-          <MapboxGL.ShapeSource
-            id="bus"
-            onPress={({nativeEvent}) =>
-              showData(nativeEvent.payload.properties)
-            }
-            shape={vehiculesGeoJson}>
-            <MapboxGL.Animated.SymbolLayer
-              aboveLayerID={'myTrams'}
-              id="myBus"
-              filter={
-                allVehicles
-                  ? ['==', ['get', 'mode'], 'B']
-                  : [
-                      'all',
-                      ['==', ['get', 'mode'], 'B'],
-                      ['==', ['get', 'myLine'], 1],
-                    ]
-              }
-              minZoomLevel={10}
-              style={iconStyles.vehicules.bus}
-            />
-          </MapboxGL.ShapeSource>
+          {allVehicles ? (
+            <Fragment>
+              <MapboxGL.ShapeSource
+                id="tram"
+                onPress={({nativeEvent}) =>
+                  showData(nativeEvent.payload.properties)
+                }
+                shape={vehiculesGeoJson}>
+                <MapboxGL.SymbolLayer
+                  id="myTrams"
+                  filter={
+                    allVehicles
+                      ? ['==', ['get', 'mode'], 'T']
+                      : [
+                          'all',
+                          ['==', ['get', 'mode'], 'T'],
+                          ['==', ['get', 'myLine'], 1],
+                        ]
+                  }
+                  minZoomLevel={10}
+                  style={iconStyles.vehicules.tram}
+                />
+              </MapboxGL.ShapeSource>
+              <MapboxGL.ShapeSource
+                id="metro"
+                onPress={({nativeEvent}) =>
+                  showData(nativeEvent.payload.properties)
+                }
+                shape={vehiculesGeoJson}>
+                <MapboxGL.SymbolLayer
+                  aboveLayerID={'myTrams'}
+                  id="myMetros"
+                  filter={
+                    allVehicles
+                      ? ['==', ['get', 'mode'], 'M']
+                      : [
+                          'all',
+                          ['==', ['get', 'mode'], 'M'],
+                          ['==', ['get', 'myLine'], 1],
+                        ]
+                  }
+                  minZoomLevel={10}
+                  style={iconStyles.vehicules.metro}
+                />
+              </MapboxGL.ShapeSource>
+              <MapboxGL.ShapeSource
+                id="bus"
+                onPress={({nativeEvent}) =>
+                  showData(nativeEvent.payload.properties)
+                }
+                shape={vehiculesGeoJson}>
+                <MapboxGL.SymbolLayer
+                  aboveLayerID={'myTrams'}
+                  id="myBus"
+                  filter={
+                    allVehicles
+                      ? ['==', ['get', 'mode'], 'B']
+                      : [
+                          'all',
+                          ['==', ['get', 'mode'], 'B'],
+                          ['==', ['get', 'myLine'], 1],
+                        ]
+                  }
+                  minZoomLevel={10}
+                  style={iconStyles.vehicules.bus}
+                />
+              </MapboxGL.ShapeSource>
+            </Fragment>
+          ) : (
+            <Fragment>
+              <MapboxGL.ShapeSource
+                id="tram"
+                onPress={({nativeEvent}) =>
+                  showData(nativeEvent.payload.properties)
+                }
+                shape={myVehiculesGeoJson}>
+                <MapboxGL.SymbolLayer
+                  id="myTrams"
+                  filter={['==', ['get', 'mode'], 'T']}
+                  minZoomLevel={10}
+                  style={iconStyles.vehicules.tram}
+                />
+              </MapboxGL.ShapeSource>
+              <MapboxGL.ShapeSource
+                id="metro"
+                onPress={({nativeEvent}) =>
+                  showData(nativeEvent.payload.properties)
+                }
+                shape={myVehiculesGeoJson}>
+                <MapboxGL.SymbolLayer
+                  aboveLayerID={'myTrams'}
+                  id="myMetros"
+                  filter={['==', ['get', 'mode'], 'M']}
+                  minZoomLevel={10}
+                  style={iconStyles.vehicules.metro}
+                />
+              </MapboxGL.ShapeSource>
+              <MapboxGL.ShapeSource
+                id="bus"
+                onPress={({nativeEvent}) =>
+                  showData(nativeEvent.payload.properties)
+                }
+                shape={myVehiculesGeoJson}>
+                <MapboxGL.SymbolLayer
+                  aboveLayerID={'myTrams'}
+                  id="myBus"
+                  filter={['==', ['get', 'mode'], 'B']}
+                  minZoomLevel={10}
+                  style={iconStyles.vehicules.bus}
+                />
+              </MapboxGL.ShapeSource>
+            </Fragment>
+          )}
           <MapboxGL.UserLocation />
         </MapboxGL.MapView>
       </View>
-    );
-  else
-    return (
-      <View>
-        <Text>Not allowed</Text>
-      </View>
-    );
+    )
+  );
 };
 
 const styles = StyleSheet.create({

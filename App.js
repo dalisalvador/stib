@@ -116,6 +116,11 @@ const App = () => {
       ...vehiculesGeoJson,
       features: newFeatures,
     });
+
+    setMyVehiculesGeoJson({
+      ...vehiculesGeoJson,
+      features: newFeatures.filter(feature => feature.properties.myLine === 1),
+    });
   };
 
   const deleteLine = lineTodelete => {
@@ -133,25 +138,6 @@ const App = () => {
         ...geoJson.features,
         ...line.line.shape.features,
         ...line.line.stops,
-      ],
-    });
-  };
-
-  const addVehiculesToGeoJson = features => {
-    setVehiculesGeoJson({
-      ...vehiculesGeoJson,
-      features,
-    });
-  };
-
-  const deleteStopsFromGeoJson = lineTodelete => {
-    setGeoJson({
-      ...geoJson,
-      features: [
-        ...geoJson.features.filter(
-          (feature, i) =>
-            geoJson.features.indexOf(line.line.shape.features[0]) !== i,
-        ),
       ],
     });
   };
@@ -187,6 +173,13 @@ const App = () => {
         setVehiculesGeoJson({
           ...vehiculesGeoJson,
           features: concatenatedFeatures,
+        });
+
+        setMyVehiculesGeoJson({
+          ...vehiculesGeoJson,
+          features: concatenatedFeatures.filter(
+            feature => feature.properties.myLine === 1,
+          ),
         });
       });
     }
@@ -243,7 +236,6 @@ const App = () => {
     },
   ];
 
-  console.log(vehiculesGeoJson);
   return (
     <AllLinesProvider
       value={{
@@ -262,14 +254,15 @@ const App = () => {
             width: '100%',
             height: '100%',
           }}>
-          {/* <MapBox
+          <MapBox
             myLines={myLines}
             geoJson={geoJson}
             vehiculesGeoJson={vehiculesGeoJson}
+            myVehiculesGeoJson={myVehiculesGeoJson}
             allStops={allStops}
             mapFunctions={map}
-          /> */}
-          <MapBoxAnimated />
+          />
+          {/* <MapBoxAnimated /> */}
         </View>
         <FloatingAction
           actions={actions}
