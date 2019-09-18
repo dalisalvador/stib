@@ -23,6 +23,7 @@ import Timer from './Components/Timer/Timer';
 import ProgressRing from './Components/Timer/Components/ProgressRing';
 
 import Animated, {Easing} from 'react-native-reanimated';
+import {reset} from 'ansi-colors';
 const {
   Clock,
   Value,
@@ -34,78 +35,50 @@ const {
   debug,
   stopClock,
   block,
+  onChange,
   call,
+  not,
+  and,
   eq,
 } = Animated;
 
-const useAnimation = clock => {
-  const [background, setBackground] = useState('blue');
-  const [lastBackground, setLastBackground] = useState('white');
-
-  const runTiming = (clock, value, dest) => {
-    const state = {
-      finished: new Value(0),
-      position: new Value(0),
-      time: new Value(0),
-      frameTime: new Value(0),
-    };
-
-    const config = {
-      duration: 15000,
-      toValue: new Value(0),
-      easing: Easing.inOut(Easing.ease),
-    };
-
-    return block([
-      cond(
-        clockRunning(clock),
-        [set(config.toValue, dest)],
-        [
-          cond(eq(state.position._value, 0), [
-            call([], () => alert('CLock Not Runing')),
-            set(state.finished, 0),
-            set(state.time, 0),
-            set(state.position, value),
-            set(state.frameTime, 0),
-            set(config.toValue, dest),
-            startClock(clock),
-          ]),
-        ],
-      ),
-      timing(clock, state, config),
-      cond(state.finished, [
-        call([], () => alert('Finished')),
+const runTiming = (clock, value, dest, state, config) => {
+  return block([
+    cond(
+      clockRunning(clock),
+      [set(config.toValue, dest)],
+      [
         set(state.finished, 0),
-        call([], () => generateBackgorund()),
         set(state.time, 0),
         set(state.position, value),
         set(state.frameTime, 0),
         set(config.toValue, dest),
         startClock(clock),
-      ]),
-      state.position,
-    ]);
-  };
+      ],
+    ),
+    timing(clock, state, config),
+    cond(state.finished, [stopClock(clock), set(changeBg, not(changeBg))]),
+    state.position,
+  ]);
+};
 
-  const generateBackgorund = () => {
-    setLastBackground(background);
-    setBackground(
-      '#' +
-        Math.random()
-          .toString(16)
-          .slice(2, 8),
-    );
-  };
+const state = {
+  finished: new Value(0),
+  position: new Value(0),
+  time: new Value(0),
+  frameTime: new Value(0),
+};
 
-  return {
-    progress: runTiming(clock, 0, 100),
-    background,
-    generateBackgorund,
-    lastBackground,
-  };
+const config = {
+  duration: 15000,
+  toValue: new Value(0),
+  easing: Easing.inOut(Easing.ease),
 };
 
 const clock = new Clock();
+const changeBg = new Value(0);
+const startAnim = new Value(1);
+const progress = runTiming(clock, 0, 100, state, config);
 
 const App = () => {
   const [marginBottom, setMarginBottom] = useState(1);
@@ -115,12 +88,23 @@ const App = () => {
   const [allLines, setAllLines] = useState();
   const [myLines, setMyLines] = useState([]);
 
-  const {
-    progress,
-    background,
-    generateBackgorund,
-    lastBackground,
-  } = useAnimation(clock);
+  //Animation
+
+  const [lastBackground, setLastBackground] = useState('blue');
+  const [background, setBackground] = useState('red');
+  const backgroundRef = useRef(background);
+  backgroundRef.current = background;
+  const lastBackgroundRef = useRef(lastBackground);
+  lastBackgroundRef.current = lastBackground;
+
+  useEffect(() => {
+    setBackground(
+      '#' +
+        Math.random()
+          .toString(16)
+          .slice(2, 8),
+    );
+  }, [lastBackground]);
 
   //Need this for setInterval
   const allLinesRef = useRef(allLines);
@@ -144,6 +128,7 @@ const App = () => {
   });
 
   const toast = useRef(null);
+
   //Settings
   const [allVehicles, setAllVehicles] = useState(false);
   const [showStopName, setShowStopName] = useState(false);
@@ -358,12 +343,21 @@ const App = () => {
           /> */}
           {/* <MapBoxAnimated /> */}
         </View>
+
         <Timer
           progress={progress}
-          generateBackgorund={generateBackgorund}
           background={background}
           lastBackground={lastBackground}
         />
+        <Animated.Code>
+          {() =>
+            onChange(changeBg, [
+              call([], ([]) => {
+                setLastBackground(backgroundRef.current);
+              }),
+            ])
+          }
+        </Animated.Code>
         <FloatingAction
           actions={actions}
           overlayColor={'rgba(0, 0, 0, 0)'}

@@ -17,7 +17,7 @@ const {
   call,
 } = Animated;
 
-const Timer = ({progress, generateBackgorund, lastBackground, background}) => {
+const Timer = ({progress, background, lastBackground}) => {
   return (
     <ProgressRing
       radius={65}
@@ -25,7 +25,6 @@ const Timer = ({progress, generateBackgorund, lastBackground, background}) => {
       progress={progress}
       background={background}
       lastBackground={lastBackground}
-      generateBackgorund={generateBackgorund}
     />
   );
 };
