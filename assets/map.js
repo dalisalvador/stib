@@ -72,43 +72,79 @@ const mapFunctions = {
     );
   },
 
-  updateAllVehicles: async nroStops => {
-    let features = [];
-    return nroStops.map(async stop => {
-      return new Promise(async (resolve, reject) => {
-        let data = await mapFunctions.getVehicles(stop);
-        if (data.lines.length > 0) {
-          data.lines.map(line => {
-            line.vehiclePositions.map(vehicle => {
-              let stopsShape = mapFunctions.getStopFromVehiclePosition(vehicle);
-              stopsShape.map(stop => {
-                let linesShape = mapFunctions.getLineShape(stop);
-                if (linesShape) {
-                  let coordinates = mapFunctions.getPosition(
-                    mapFunctions.findStop(
-                      linesShape.geometry.coordinates,
-                      stop.geometry.coordinates,
-                      0.01,
-                    ),
-                    vehicle.distanceFromPoint,
-                  );
-                  coordinates
-                    ? features.push(
-                        mapFunctions.createVehicleFeature(
-                          [coordinates[0], coordinates[1]],
-                          stop,
-                        ),
-                      )
-                    : null;
-                }
-              });
+  updateAllVehicles: () => {
+    return new Promise(async (resolve, reject) => {
+      let features = [];
+      let lines = await mapFunctions.getLines();
+      if (lines.length > 0) {
+        lines.map(line => {
+          line.vehiclePositions.map(vehicle => {
+            let stopsShape = mapFunctions.getStopFromVehiclePosition(vehicle);
+            stopsShape.map(stop => {
+              let linesShape = mapFunctions.getLineShape(stop);
+              if (linesShape) {
+                let coordinates = mapFunctions.getPosition(
+                  mapFunctions.findStop(
+                    linesShape.geometry.coordinates,
+                    stop.geometry.coordinates,
+                    0.01,
+                  ),
+                  vehicle.distanceFromPoint,
+                );
+                coordinates
+                  ? features.push(
+                      mapFunctions.createVehicleFeature(
+                        [coordinates[0], coordinates[1]],
+                        stop,
+                      ),
+                    )
+                  : null;
+              }
             });
           });
-        }
-        if (features.length > 0) resolve(features);
-      });
+        });
+      }
+      resolve(features);
     });
   },
+
+  // updateAllVehicles: async nroStops => {
+  //   let features = [];
+  //   return nroStops.map(async stop => {
+  //     return new Promise(async (resolve, reject) => {
+  //       let data = await mapFunctions.getVehicles(stop);
+  //       if (data.lines.length > 0) {
+  //         data.lines.map(line => {
+  //           line.vehiclePositions.map(vehicle => {
+  //             let stopsShape = mapFunctions.getStopFromVehiclePosition(vehicle);
+  //             stopsShape.map(stop => {
+  //               let linesShape = mapFunctions.getLineShape(stop);
+  //               if (linesShape) {
+  //                 let coordinates = mapFunctions.getPosition(
+  //                   mapFunctions.findStop(
+  //                     linesShape.geometry.coordinates,
+  //                     stop.geometry.coordinates,
+  //                     0.01,
+  //                   ),
+  //                   vehicle.distanceFromPoint,
+  //                 );
+  //                 coordinates
+  //                   ? features.push(
+  //                       mapFunctions.createVehicleFeature(
+  //                         [coordinates[0], coordinates[1]],
+  //                         stop,
+  //                       ),
+  //                     )
+  //                   : null;
+  //               }
+  //             });
+  //           });
+  //         });
+  //       }
+  //       if (features.length > 0) resolve(features);
+  //     });
+  //   });
+  // },
 
   createVehicleFeature: (coordinates, stop) => {
     return {
@@ -262,6 +298,20 @@ const mapFunctions = {
         stop.properties.numero_lig === lineId &&
         stop.properties.stop_id.includes(vehicle.pointId),
     );
+  },
+
+  getLines: () => {
+    return axios
+      .get('https://stibserver.herokuapp.com/api/vehicles/getVehicules')
+      .then(res => {
+        if (res.data.success) {
+          return res.data.msg;
+        } else {
+          alert('Error fetching data');
+          return 'Error';
+        }
+      })
+      .catch(err => console.log('Error API Response: ', err));
   },
 
   getLine: async line => {

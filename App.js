@@ -20,10 +20,9 @@ import MapBox from './Components/MapBox/MapBox';
 import MapBoxAnimated from './Components/MapBox/MapBoxAnimated';
 import Toast, {DURATION} from 'react-native-easy-toast';
 import Timer from './Components/Timer/Timer';
-import ProgressRing from './Components/Timer/Components/ProgressRing';
 
 import Animated, {Easing} from 'react-native-reanimated';
-import {reset} from 'ansi-colors';
+
 const {
   Clock,
   Value,
@@ -32,14 +31,11 @@ const {
   startClock,
   clockRunning,
   timing,
-  debug,
   stopClock,
   block,
   onChange,
   call,
   not,
-  and,
-  eq,
 } = Animated;
 
 const runTiming = (clock, value, dest, state, config) => {
@@ -137,12 +133,13 @@ const App = () => {
     setAllLines(map.initLines(allStops));
   }, []);
 
-  // useEffect(() => {
-  //   updateAllVehicleGeoJson(allLinesRef.current, myLinesRef.current);
-  //   setInterval(() => {
-  //     updateAllVehicleGeoJson(allLinesRef.current, myLinesRef.current);
-  //   }, 1000 * 35);
-  // }, [allLines]);
+  useEffect(() => {
+    updateAllVehicleGeoJson();
+    // updateAllVehicleGeoJson(allLinesRef.current, myLinesRef.current);
+    // setInterval(() => {
+    //   updateAllVehicleGeoJson(allLinesRef.current, myLinesRef.current);
+    // }, 1000 * 35);
+  }, [allLines]);
 
   const addLine = selectedLine => {
     if (
@@ -227,40 +224,43 @@ const App = () => {
     });
   };
 
-  const updateAllVehicleGeoJson = async (allLines, myLines) => {
-    if (allLines) {
-      let responses = await map.updateAllVehicles(
-        chunkArray(
-          allLines
-            .map(line => line.nroStop)
-            .filter((x, i, arr) => arr.indexOf(x) === i),
-          10,
-        ),
-      );
+  const updateAllVehicleGeoJson = async () => {
+    let features = await map.updateAllVehicles();
+    setVehiculesGeoJson({
+      ...vehiculesGeoJson,
+      features,
+    });
+    // if (allLines) {
+    //   let responses = await map.updateAllVehicles(
+    //     chunkArray(
+    //       allLines
+    //         .map(line => line.nroStop)
+    //         .filter((x, i, arr) => arr.indexOf(x) === i),
+    //       10,
+    //     ),
+    //   );
 
-      Promise.all(responses).then(features => {
-        //add "myLine=1" property if vahicule exists in myLines
-        let concatenatedFeatures = features.reduce((a, b) => {
-          return a.concat(b);
-        });
-        concatenatedFeatures.map((vehicle, i) => {
-          myLines.map(line => {
-            if (
-              vehicle.properties.numero_lig === line.selection.nroStop &&
-              vehicle.properties.variante === line.selection.variantStop &&
-              vehicle.properties.mode === line.selection.mode[0]
-            ) {
-              concatenatedFeatures[i].properties.myLine = 1;
-            }
-          });
-        });
+    //   Promise.all(responses).then(features => {
+    //     //add "myLine=1" property if vahicule exists in myLines
+    //     let concatenatedFeatures = features.reduce((a, b) => {
+    //       return a.concat(b);
+    //     });
+    //     concatenatedFeatures.map((vehicle, i) => {
+    //       myLines.map(line => {
+    //         if (
+    //           vehicle.properties.numero_lig === line.selection.nroStop &&
+    //           vehicle.properties.variante === line.selection.variantStop &&
+    //           vehicle.properties.mode === line.selection.mode[0]
+    //         ) {
+    //           concatenatedFeatures[i].properties.myLine = 1;
+    //         }
+    //       });
+    //     });
 
-        setVehiculesGeoJson({
-          ...vehiculesGeoJson,
-          features: concatenatedFeatures,
-        });
-      });
-    }
+    // setVehiculesGeoJson({
+    //   ...vehiculesGeoJson,
+    //   features: concatenatedFeatures,
+    // });
   };
 
   const chunkArray = (myArray, chunk_size) => {
@@ -334,13 +334,13 @@ const App = () => {
             flex: 1,
             backgroundColor: 'white',
           }}>
-          {/* <MapBox
+          <MapBox
             myLines={myLines}
             geoJson={geoJson}
             vehiculesGeoJson={vehiculesGeoJson}
             allStops={allStops}
             mapFunctions={map}
-          /> */}
+          />
           {/* <MapBoxAnimated /> */}
         </View>
 

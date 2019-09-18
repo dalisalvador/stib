@@ -1,5 +1,4 @@
-import React, {Component, useState, useRef, useEffect} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import React from 'react';
 
 import Animated, {Easing} from 'react-native-reanimated';
 import ProgressRing from './Components/ProgressRing';
