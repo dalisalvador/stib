@@ -102,7 +102,6 @@ const MapBox = ({...props}) => {
     );
   };
 
-  console.log(myVehiculesGeoJson, allVehicles);
   return (
     permissions && (
       <View style={{flex: 1}}>

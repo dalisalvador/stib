@@ -26,8 +26,8 @@ const CardAdd = ({...props}) => {
         {query ? (
           <ListResults query={query} resetQuery={resetQuery} />
         ) : (
-          <MyLinesAnimated />
-          // <MyLines />
+          // <MyLinesAnimated />
+          <MyLines />
         )}
       </View>
       <View style={styles.button}>

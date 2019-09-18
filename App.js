@@ -1,11 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
-
 import React, {Fragment, useState, useEffect, useRef, useInterval} from 'react';
 import {
   StyleSheet,
@@ -27,6 +19,62 @@ import lines from './assets/info/lines';
 import MapBox from './Components/MapBox/MapBox';
 import MapBoxAnimated from './Components/MapBox/MapBoxAnimated';
 import Toast, {DURATION} from 'react-native-easy-toast';
+import Timer from './Components/Timer/Timer';
+
+import Animated, {Easing} from 'react-native-reanimated';
+
+const {
+  Clock,
+  Value,
+  set,
+  cond,
+  startClock,
+  clockRunning,
+  timing,
+  stopClock,
+  block,
+  onChange,
+  call,
+  not,
+} = Animated;
+
+const runTiming = (clock, value, dest, state, config) => {
+  return block([
+    cond(
+      clockRunning(clock),
+      [set(config.toValue, dest)],
+      [
+        set(state.finished, 0),
+        set(state.time, 0),
+        set(state.position, value),
+        set(state.frameTime, 0),
+        set(config.toValue, dest),
+        startClock(clock),
+      ],
+    ),
+    timing(clock, state, config),
+    cond(state.finished, [stopClock(clock), set(changeBg, not(changeBg))]),
+    state.position,
+  ]);
+};
+
+const state = {
+  finished: new Value(0),
+  position: new Value(0),
+  time: new Value(0),
+  frameTime: new Value(0),
+};
+
+const config = {
+  duration: 15000,
+  toValue: new Value(0),
+  easing: Easing.inOut(Easing.ease),
+};
+
+const clock = new Clock();
+const changeBg = new Value(0);
+const startAnim = new Value(1);
+const progress = runTiming(clock, 0, 100, state, config);
 
 const App = () => {
   const [marginBottom, setMarginBottom] = useState(1);
@@ -35,6 +83,24 @@ const App = () => {
   const [mainPressed, setMainPressed] = useState(false);
   const [allLines, setAllLines] = useState();
   const [myLines, setMyLines] = useState([]);
+
+  //Animation
+  const [lastBackground, setLastBackground] = useState('blue');
+  const [background, setBackground] = useState('red');
+  const backgroundRef = useRef(background);
+  backgroundRef.current = background;
+  const lastBackgroundRef = useRef(lastBackground);
+  lastBackgroundRef.current = lastBackground;
+
+  useEffect(() => {
+    setBackground(
+      '#' +
+        Math.random()
+          .toString(16)
+          .slice(2, 8),
+    );
+    updateAllVehicleGeoJson(myLinesRef.current);
+  }, [lastBackground]);
 
   //Need this for setInterval
   const allLinesRef = useRef(allLines);
@@ -58,6 +124,7 @@ const App = () => {
   });
 
   const toast = useRef(null);
+
   //Settings
   const [allVehicles, setAllVehicles] = useState(false);
   const [showStopName, setShowStopName] = useState(false);
@@ -66,12 +133,16 @@ const App = () => {
     setAllLines(map.initLines(allStops));
   }, []);
 
-  useEffect(() => {
-    updateAllVehicleGeoJson(allLinesRef.current, myLinesRef.current);
-    setInterval(() => {
-      updateAllVehicleGeoJson(allLinesRef.current, myLinesRef.current);
-    }, 1000 * 35);
-  }, [allLines]);
+  // useEffect(() => {
+  //   updateAllVehicleGeoJson();
+  //   // setInterval(() => {
+  //   //   updateAllVehicleGeoJson(allLinesRef.current, myLinesRef.current);
+  //   // }, 1000 * 35);
+  //   // updateAllVehicleGeoJson(allLinesRef.current, myLinesRef.current);
+  //   // setInterval(() => {
+  //   //   updateAllVehicleGeoJson(allLinesRef.current, myLinesRef.current);
+  //   // }, 1000 * 35);
+  // }, [allLines]);
 
   const addLine = selectedLine => {
     if (
@@ -142,47 +213,43 @@ const App = () => {
     });
   };
 
-  const updateAllVehicleGeoJson = async (allLines, myLines) => {
-    if (allLines) {
-      let responses = await map.updateAllVehicles(
-        chunkArray(
-          allLines
-            .map(line => line.nroStop)
-            .filter((x, i, arr) => arr.indexOf(x) === i),
-          10,
+  const addVehiculesToGeoJson = features => {
+    setVehiculesGeoJson({
+      ...vehiculesGeoJson,
+      features,
+    });
+  };
+
+  const deleteStopsFromGeoJson = lineTodelete => {
+    setGeoJson({
+      ...geoJson,
+      features: [
+        ...geoJson.features.filter(
+          (feature, i) =>
+            geoJson.features.indexOf(line.line.shape.features[0]) !== i,
         ),
-      );
+      ],
+    });
+  };
 
-      Promise.all(responses).then(features => {
-        //add "myLine=1" property if vahicule exists in myLines
-        let concatenatedFeatures = features.reduce((a, b) => {
-          return a.concat(b);
-        });
-        concatenatedFeatures.map((vehicle, i) => {
-          myLines.map(line => {
-            if (
-              vehicle.properties.numero_lig === line.selection.nroStop &&
-              vehicle.properties.variante === line.selection.variantStop &&
-              vehicle.properties.mode === line.selection.mode[0]
-            ) {
-              concatenatedFeatures[i].properties.myLine = 1;
-            }
-          });
-        });
-
-        setVehiculesGeoJson({
-          ...vehiculesGeoJson,
-          features: concatenatedFeatures,
-        });
-
-        setMyVehiculesGeoJson({
-          ...vehiculesGeoJson,
-          features: concatenatedFeatures.filter(
-            feature => feature.properties.myLine === 1,
-          ),
-        });
+  const updateAllVehicleGeoJson = async myLines => {
+    let features = await map.updateAllVehicles();
+    features.map((vehicle, i) => {
+      myLines.map(line => {
+        if (
+          vehicle.properties.numero_lig === line.selection.nroStop &&
+          vehicle.properties.variante === line.selection.variantStop &&
+          vehicle.properties.mode === line.selection.mode[0]
+        ) {
+          features[i].properties.myLine = 1;
+        }
       });
-    }
+    });
+
+    setVehiculesGeoJson({
+      ...vehiculesGeoJson,
+      features,
+    });
   };
 
   const chunkArray = (myArray, chunk_size) => {
@@ -253,6 +320,8 @@ const App = () => {
           style={{
             width: '100%',
             height: '100%',
+            flex: 1,
+            backgroundColor: 'white',
           }}>
           <MapBox
             myLines={myLines}
@@ -264,6 +333,21 @@ const App = () => {
           />
           {/* <MapBoxAnimated /> */}
         </View>
+
+        <Timer
+          progress={progress}
+          background={background}
+          lastBackground={lastBackground}
+        />
+        <Animated.Code>
+          {() =>
+            onChange(changeBg, [
+              call([], ([]) => {
+                setLastBackground(backgroundRef.current);
+              }),
+            ])
+          }
+        </Animated.Code>
         <FloatingAction
           actions={actions}
           overlayColor={'rgba(0, 0, 0, 0)'}
