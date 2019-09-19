@@ -113,15 +113,18 @@ const App = () => {
   const [showStopName, setShowStopName] = useState(false);
 
   useEffect(() => {
+    updateAllVehicleGeoJson(myLines);
+  }, [lastBackground]);
+
+  useEffect(() => {
+    set(changeBg, 1);
     setBackground(
       '#' +
         Math.random()
           .toString(16)
           .slice(2, 8),
     );
-    set(changeBg, 1);
-    updateAllVehicleGeoJson(myLines);
-  }, [lastBackground]);
+  }, [vehiculesGeoJson]);
 
   useEffect(() => {
     setAllLines(map.initLines(allStops));

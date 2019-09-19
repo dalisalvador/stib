@@ -1,10 +1,9 @@
 import React from 'react';
 import Svg, {Circle} from 'react-native-svg';
 import Animated from 'react-native-reanimated';
+import {YellowBox} from 'react-native';
 
 const {divide, multiply, sub} = Animated;
-
-import {YellowBox} from 'react-native';
 
 // //TODO:CHECK NOT USING THIS LIFECYCLE METHODS. Ignoring change of lifecycle react-native
 YellowBox.ignoreWarnings([

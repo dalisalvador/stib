@@ -1,12 +1,6 @@
 import React, {useEffect, Fragment, useRef, useContext, useState} from 'react';
 import MapboxGL from '@react-native-mapbox-gl/maps';
-import {
-  StyleSheet,
-  View,
-  PermissionsAndroid,
-  Dimensions,
-  Text,
-} from 'react-native';
+import {StyleSheet, View, Dimensions, Platform} from 'react-native';
 
 import AllLinesContext from '../../allLinesContext';
 
@@ -30,11 +24,12 @@ const MapBox = ({...props}) => {
   const mapBox = useRef(null);
 
   useEffect(() => {
-    setPermissions(getPermissions());
+    if (Platform.OS === 'android') setPermissions(getPermissions());
+    else setPermissions(true);
   }, []);
 
   const getPermissions = async () => {
-    console.log(await MapboxGL.requestAndroidLocationPermissions());
+    MapboxGL.requestAndroidLocationPermissions();
   };
 
   MapboxGL.setAccessToken(
