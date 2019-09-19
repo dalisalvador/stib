@@ -27,6 +27,8 @@ const styles = StyleSheet.create({
   modalBody: {
     height: '100%',
     flex: 1,
+    paddingTop: 25,
+    paddingBottom: 25,
     width: Dimensions.get('window').width,
     // backgroundColor: 'blue',
   },
