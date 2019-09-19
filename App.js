@@ -33,17 +33,17 @@ const {
 } = Animated;
 
 const runTiming = (clock, value, dest) => {
+  const config = {
+    duration: 15000,
+    toValue: new Value(0),
+    easing: Easing.inOut(Easing.ease),
+  };
+
   const state = {
     finished: new Value(0),
     position: new Value(0),
     time: new Value(0),
     frameTime: new Value(0),
-  };
-
-  const config = {
-    duration: 15000,
-    toValue: new Value(0),
-    easing: Easing.inOut(Easing.ease),
   };
 
   return block([
@@ -82,6 +82,10 @@ const App = () => {
   //Animation Backgrounds
   const [lastBackground, setLastBackground] = useState('blue');
   const [background, setBackground] = useState('red');
+  const backgroundRef = useRef(background);
+  backgroundRef.current = background;
+  const lastBackgroundRef = useRef(lastBackground);
+  lastBackgroundRef.current = lastBackground;
 
   //GeoJson objects
   const [geoJson, setGeoJson] = useState({
@@ -248,14 +252,14 @@ const App = () => {
         </View>
         <Timer
           progress={progress}
-          background={background}
-          lastBackground={lastBackground}
+          background={backgroundRef.current}
+          lastBackground={lastBackgroundRef.current}
         />
         <Animated.Code>
           {() =>
             onChange(changeBg, [
               call([], ([]) => {
-                setLastBackground(background);
+                setLastBackground(backgroundRef.current);
               }),
             ])
           }
