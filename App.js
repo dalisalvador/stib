@@ -1,14 +1,7 @@
-import React, {Fragment, useState, useEffect, useRef, useInterval} from 'react';
-import {
-  StyleSheet,
-  View,
-  PermissionsAndroid,
-  Dimensions,
-  Text,
-} from 'react-native';
+import React, {Fragment, useState, useEffect, useRef} from 'react';
+import {StyleSheet, View, Dimensions, Text} from 'react-native';
 
 import Geojson from 'react-native-geojson';
-import {FloatingAction} from 'react-native-floating-action';
 import ModalAdd from './Components/Modal/ModalAdd';
 import ModalSettings from './Components/Modal/ModalSettings';
 
@@ -17,11 +10,11 @@ import map from './assets/map';
 import allStops from './assets/info/stops';
 import lines from './assets/info/lines';
 import MapBox from './Components/MapBox/MapBox';
-import MapBoxAnimated from './Components/MapBox/MapBoxAnimated';
 import Toast, {DURATION} from 'react-native-easy-toast';
 import Timer from './Components/Timer/Timer';
 
 import Animated, {Easing} from 'react-native-reanimated';
+import FloatingButton from './Components/FloatingButton/FloatingButton';
 
 const {
   Clock,
@@ -38,7 +31,20 @@ const {
   not,
 } = Animated;
 
-const runTiming = (clock, value, dest, state, config) => {
+const runTiming = (clock, value, dest) => {
+  const state = {
+    finished: new Value(0),
+    position: new Value(0),
+    time: new Value(0),
+    frameTime: new Value(0),
+  };
+
+  const config = {
+    duration: 15000,
+    toValue: new Value(0),
+    easing: Easing.inOut(Easing.ease),
+  };
+
   return block([
     cond(
       clockRunning(clock),
@@ -58,26 +64,11 @@ const runTiming = (clock, value, dest, state, config) => {
   ]);
 };
 
-const state = {
-  finished: new Value(0),
-  position: new Value(0),
-  time: new Value(0),
-  frameTime: new Value(0),
-};
-
-const config = {
-  duration: 15000,
-  toValue: new Value(0),
-  easing: Easing.inOut(Easing.ease),
-};
-
 const clock = new Clock();
 const changeBg = new Value(0);
-const startAnim = new Value(1);
-const progress = runTiming(clock, 0, 100, state, config);
+const progress = runTiming(clock, 0, 100);
 
 const App = () => {
-  const [marginBottom, setMarginBottom] = useState(1);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalSettings, setModalSettings] = useState(false);
   const [mainPressed, setMainPressed] = useState(false);
@@ -87,10 +78,10 @@ const App = () => {
   //Animation
   const [lastBackground, setLastBackground] = useState('blue');
   const [background, setBackground] = useState('red');
-  const backgroundRef = useRef(background);
-  backgroundRef.current = background;
-  const lastBackgroundRef = useRef(lastBackground);
-  lastBackgroundRef.current = lastBackground;
+  // const backgroundRef = useRef(background);
+  // backgroundRef.current = background;
+  // const lastBackgroundRef = useRef(lastBackground);
+  // lastBackgroundRef.current = lastBackground;
 
   useEffect(() => {
     setBackground(
@@ -99,14 +90,14 @@ const App = () => {
           .toString(16)
           .slice(2, 8),
     );
-    updateAllVehicleGeoJson(myLinesRef.current);
+    // updateAllVehicleGeoJson(myLinesRef.current);
   }, [lastBackground]);
 
   //Need this for setInterval
-  const allLinesRef = useRef(allLines);
-  allLinesRef.current = allLines;
-  const myLinesRef = useRef(myLines);
-  myLinesRef.current = myLines;
+  // const allLinesRef = useRef(allLines);
+  // allLinesRef.current = allLines;
+  // const myLinesRef = useRef(myLines);
+  // myLinesRef.current = myLines;
 
   const [geoJson, setGeoJson] = useState({
     type: 'FeatureCollection',
@@ -132,17 +123,6 @@ const App = () => {
   useEffect(() => {
     setAllLines(map.initLines(allStops));
   }, []);
-
-  // useEffect(() => {
-  //   updateAllVehicleGeoJson();
-  //   // setInterval(() => {
-  //   //   updateAllVehicleGeoJson(allLinesRef.current, myLinesRef.current);
-  //   // }, 1000 * 35);
-  //   // updateAllVehicleGeoJson(allLinesRef.current, myLinesRef.current);
-  //   // setInterval(() => {
-  //   //   updateAllVehicleGeoJson(allLinesRef.current, myLinesRef.current);
-  //   // }, 1000 * 35);
-  // }, [allLines]);
 
   const addLine = selectedLine => {
     if (
@@ -213,24 +193,24 @@ const App = () => {
     });
   };
 
-  const addVehiculesToGeoJson = features => {
-    setVehiculesGeoJson({
-      ...vehiculesGeoJson,
-      features,
-    });
-  };
+  // const addVehiculesToGeoJson = features => {
+  //   setVehiculesGeoJson({
+  //     ...vehiculesGeoJson,
+  //     features,
+  //   });
+  // };
 
-  const deleteStopsFromGeoJson = lineTodelete => {
-    setGeoJson({
-      ...geoJson,
-      features: [
-        ...geoJson.features.filter(
-          (feature, i) =>
-            geoJson.features.indexOf(line.line.shape.features[0]) !== i,
-        ),
-      ],
-    });
-  };
+  // const deleteStopsFromGeoJson = lineTodelete => {
+  //   setGeoJson({
+  //     ...geoJson,
+  //     features: [
+  //       ...geoJson.features.filter(
+  //         (feature, i) =>
+  //           geoJson.features.indexOf(line.line.shape.features[0]) !== i,
+  //       ),
+  //     ],
+  //   });
+  // };
 
   const updateAllVehicleGeoJson = async myLines => {
     let features = await map.updateAllVehicles();
@@ -252,16 +232,6 @@ const App = () => {
     });
   };
 
-  const chunkArray = (myArray, chunk_size) => {
-    var results = [];
-
-    while (myArray.length) {
-      results.push(myArray.splice(0, chunk_size));
-    }
-
-    return results;
-  };
-
   const deleteLineFromGeoJson = line => {
     let newfeatures = geoJson.features.filter(
       feature => line.line.stops.indexOf(feature) === -1,
@@ -276,33 +246,6 @@ const App = () => {
     });
   };
 
-  const actions = [
-    {
-      text: 'Add Line',
-      icon: {
-        uri: 'https://www.flaticon.com/premium-icon/icons/svg/201/201531.svg',
-      },
-      name: 'addLine',
-      position: 1,
-    },
-    {
-      text: 'Settings',
-      icon: {
-        uri: 'https://www.flaticon.com/premium-icon/icons/svg/201/201531.svg',
-      },
-      name: 'settings',
-      position: 1,
-    },
-    {
-      text: 'About',
-      icon: {
-        uri: 'https://www.flaticon.com/premium-icon/icons/svg/205/205577.svg',
-      },
-      name: 'about',
-      position: 2,
-    },
-  ];
-
   return (
     <AllLinesProvider
       value={{
@@ -316,13 +259,7 @@ const App = () => {
         setShowStopName,
       }}>
       <Fragment>
-        <View
-          style={{
-            width: '100%',
-            height: '100%',
-            flex: 1,
-            backgroundColor: 'white',
-          }}>
+        <View style={styles.container}>
           <MapBox
             myLines={myLines}
             geoJson={geoJson}
@@ -331,9 +268,7 @@ const App = () => {
             allStops={allStops}
             mapFunctions={map}
           />
-          {/* <MapBoxAnimated /> */}
         </View>
-
         <Timer
           progress={progress}
           background={background}
@@ -348,19 +283,11 @@ const App = () => {
             ])
           }
         </Animated.Code>
-        <FloatingAction
-          actions={actions}
-          overlayColor={'rgba(0, 0, 0, 0)'}
-          onPressMain={() => setMainPressed(!mainPressed)}
-          onPressBackdrop={() => setMainPressed(false)}
-          onPressItem={name => {
-            if (name === 'addLine') {
-              setMainPressed(false);
-              setModalVisible(true);
-            } else if (name === 'settings') {
-              setModalSettings(true);
-            }
-          }}
+        <FloatingButton
+          mainPressed={mainPressed}
+          setMainPressed={setMainPressed}
+          setModalVisible={setModalVisible}
+          setModalSettings={setModalSettings}
         />
         <ModalAdd visible={modalVisible} setModalVisible={setModalVisible} />
         <ModalSettings
@@ -371,6 +298,15 @@ const App = () => {
       </Fragment>
     </AllLinesProvider>
   );
+};
+
+const styles = {
+  container: {
+    width: '100%',
+    height: '100%',
+    flex: 1,
+    backgroundColor: 'white',
+  },
 };
 
 export default App;
