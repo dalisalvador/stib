@@ -174,11 +174,6 @@ const App = () => {
       ...vehiculesGeoJson,
       features: newFeatures,
     });
-
-    setMyVehiculesGeoJson({
-      ...vehiculesGeoJson,
-      features: newFeatures.filter(feature => feature.properties.myLine === 1),
-    });
   };
 
   const deleteLine = lineTodelete => {
