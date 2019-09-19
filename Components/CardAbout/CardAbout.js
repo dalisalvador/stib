@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
-import {Card, Button} from 'react-native-elements';
+import {Card} from 'react-native-elements';
+import ButtonClose from '../Common/ButtonClose';
 
 const CardAbout = ({...props}) => {
   const {setModalVisible, visible} = props;
@@ -27,15 +28,13 @@ const CardAbout = ({...props}) => {
         </Text>
         <Text style={styles.textCommon}>
           This is an open-source project, so if you want to dig a little bit in
-          the code, , please check the GitHub repo "dalisalvador/stib".
+          the code, , please check the GitHub repo "dalisalvador/stib". Also
+          please keep in mind this is a free BETA app, therefore you might
+          encounter bugs, and if you do, please let me know through Github!
         </Text>
       </View>
       <View style={styles.button}>
-        <Button
-          raised
-          title="Close"
-          onPress={() => setModalVisible(!visible)}
-        />
+        <ButtonClose onPress={() => setModalVisible(!visible)} />
       </View>
     </Card>
   );

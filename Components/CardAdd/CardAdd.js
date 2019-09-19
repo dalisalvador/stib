@@ -1,12 +1,11 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import {Card, ListItem, Button} from 'react-native-elements';
+import {View, StyleSheet} from 'react-native';
+import {Card} from 'react-native-elements';
 // import SelectLine from '../SelectLine/SelectLine';
 import Search from '../SelectLine/Components/Search/Search';
 import ListResults from './Components/ListResults/ListResults';
 import MyLines from './Components/MyLines/MyLines';
-import {Icon} from 'react-native-elements';
-import MyLinesAnimated from './Components/MyLines/MyLinesAnimated';
+import ButtonClose from '../Common/ButtonClose';
 
 // implemented without image with header
 const CardAdd = ({...props}) => {
@@ -31,11 +30,7 @@ const CardAdd = ({...props}) => {
         )}
       </View>
       <View style={styles.button}>
-        <Button
-          raised
-          title="Close"
-          onPress={() => setModalVisible(!visible)}
-        />
+        <ButtonClose onPress={() => setModalVisible(!visible)} />
       </View>
     </Card>
   );
