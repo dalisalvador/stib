@@ -30,6 +30,7 @@ const {
   onChange,
   call,
   not,
+  and,
 } = Animated;
 
 const runTiming = (clock, value, dest) => {
@@ -51,12 +52,14 @@ const runTiming = (clock, value, dest) => {
       clockRunning(clock),
       [set(config.toValue, dest)],
       [
-        set(state.finished, 0),
-        set(state.time, 0),
-        set(state.position, value),
-        set(state.frameTime, 0),
-        set(config.toValue, dest),
-        startClock(clock),
+        cond(not(changeBg), [
+          set(state.finished, 0),
+          set(state.time, 0),
+          set(state.position, value),
+          set(state.frameTime, 0),
+          set(config.toValue, dest),
+          startClock(clock),
+        ]),
       ],
     ),
     timing(clock, state, config),
@@ -116,6 +119,8 @@ const App = () => {
           .toString(16)
           .slice(2, 8),
     );
+    set(changeBg, 1);
+
     //updateAllVehicleGeoJson(myLines);
   }, [lastBackground]);
 
@@ -258,9 +263,12 @@ const App = () => {
         <Animated.Code>
           {() =>
             onChange(changeBg, [
-              call([], ([]) => {
-                setLastBackground(backgroundRef.current);
-              }),
+              cond(
+                changeBg,
+                call([], ([]) => {
+                  setLastBackground(backgroundRef.current);
+                }),
+              ),
             ])
           }
         </Animated.Code>
