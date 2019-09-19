@@ -1,6 +1,9 @@
 import React from 'react';
 
 import {FloatingAction} from 'react-native-floating-action';
+import {Image} from 'react-native-elements';
+import menu from '../../assets/img/menu.png';
+import add from '../../assets/img/add.png';
 
 export default function FloatingButton({...props}) {
   const {
@@ -11,35 +14,37 @@ export default function FloatingButton({...props}) {
   } = props;
   const actions = [
     {
-      text: 'Add Line',
-      icon: {
-        uri: 'https://www.flaticon.com/premium-icon/icons/svg/201/201531.svg',
-      },
+      // text: 'Add Line',
+      icon: require('../../assets/img/add.png'),
       name: 'addLine',
       position: 1,
+      iconWidth: 45,
+      iconHeight: 45,
     },
     {
-      text: 'Settings',
-      icon: {
-        uri: 'https://www.flaticon.com/premium-icon/icons/svg/201/201531.svg',
-      },
+      // text: 'Settings',
+      icon: require('../../assets/img/settings.png'),
       name: 'settings',
       position: 1,
+      iconWidth: 40,
+      iconHeight: 40,
     },
     {
-      text: 'About',
-      icon: {
-        uri: 'https://www.flaticon.com/premium-icon/icons/svg/205/205577.svg',
-      },
+      // text: 'About',
+      icon: require('../../assets/img/about.png'),
       name: 'about',
       position: 2,
+      iconWidth: 40,
+      iconHeight: 40,
     },
   ];
 
   return (
     <FloatingAction
       actions={actions}
-      overlayColor={'rgba(0, 0, 0, 0)'}
+      floatingIcon={menu}
+      iconWidth={57}
+      iconHeight={57}
       onPressMain={() => setMainPressed(!mainPressed)}
       onPressBackdrop={() => setMainPressed(false)}
       onPressItem={name => {

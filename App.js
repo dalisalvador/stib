@@ -113,7 +113,7 @@ const App = () => {
           .toString(16)
           .slice(2, 8),
     );
-    updateAllVehicleGeoJson(myLines);
+    //updateAllVehicleGeoJson(myLines);
   }, [lastBackground]);
 
   useEffect(() => {
@@ -238,14 +238,14 @@ const App = () => {
       }}>
       <Fragment>
         <View style={styles.container}>
-          <MapBox
+          {/* <MapBox
             myLines={myLines}
             geoJson={geoJson}
             vehiculesGeoJson={vehiculesGeoJson}
             myVehiculesGeoJson={myVehiculesGeoJson}
             allStops={allStops}
             mapFunctions={map}
-          />
+          /> */}
         </View>
         <Timer
           progress={progress}
