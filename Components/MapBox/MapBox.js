@@ -102,6 +102,8 @@ const MapBox = ({...props}) => {
     );
   };
 
+  console.log(vehiculesGeoJson, myVehiculesGeoJson);
+
   return (
     permissions && (
       <View style={{flex: 1}}>
@@ -141,25 +143,21 @@ const MapBox = ({...props}) => {
               </MapboxGL.ShapeSource>
             </Fragment>
           ) : null}
-          {allVehicles ? (
+          {!allVehicles ? (
             <Fragment>
               <MapboxGL.ShapeSource
                 id="tram"
                 onPress={({nativeEvent}) =>
                   showData(nativeEvent.payload.properties)
                 }
-                shape={vehiculesGeoJson}>
+                shape={myVehiculesGeoJson}>
                 <MapboxGL.SymbolLayer
                   id="myTrams"
-                  filter={
-                    allVehicles
-                      ? ['==', ['get', 'mode'], 'T']
-                      : [
-                          'all',
-                          ['==', ['get', 'mode'], 'T'],
-                          ['==', ['get', 'myLine'], 1],
-                        ]
-                  }
+                  filter={[
+                    'all',
+                    ['==', ['get', 'mode'], 'T'],
+                    ['==', ['get', 'myLine'], 1],
+                  ]}
                   minZoomLevel={10}
                   style={iconStyles.vehicules.tram}
                 />
@@ -169,19 +167,15 @@ const MapBox = ({...props}) => {
                 onPress={({nativeEvent}) =>
                   showData(nativeEvent.payload.properties)
                 }
-                shape={vehiculesGeoJson}>
+                shape={myVehiculesGeoJson}>
                 <MapboxGL.SymbolLayer
                   aboveLayerID={'myTrams'}
                   id="myMetros"
-                  filter={
-                    allVehicles
-                      ? ['==', ['get', 'mode'], 'M']
-                      : [
-                          'all',
-                          ['==', ['get', 'mode'], 'M'],
-                          ['==', ['get', 'myLine'], 1],
-                        ]
-                  }
+                  filter={[
+                    'all',
+                    ['==', ['get', 'mode'], 'M'],
+                    ['==', ['get', 'myLine'], 1],
+                  ]}
                   minZoomLevel={10}
                   style={iconStyles.vehicules.metro}
                 />
@@ -191,19 +185,15 @@ const MapBox = ({...props}) => {
                 onPress={({nativeEvent}) =>
                   showData(nativeEvent.payload.properties)
                 }
-                shape={vehiculesGeoJson}>
+                shape={myVehiculesGeoJson}>
                 <MapboxGL.SymbolLayer
                   aboveLayerID={'myTrams'}
                   id="myBus"
-                  filter={
-                    allVehicles
-                      ? ['==', ['get', 'mode'], 'B']
-                      : [
-                          'all',
-                          ['==', ['get', 'mode'], 'B'],
-                          ['==', ['get', 'myLine'], 1],
-                        ]
-                  }
+                  filter={[
+                    'all',
+                    ['==', ['get', 'mode'], 'B'],
+                    ['==', ['get', 'myLine'], 1],
+                  ]}
                   minZoomLevel={10}
                   style={iconStyles.vehicules.bus}
                 />
@@ -216,7 +206,7 @@ const MapBox = ({...props}) => {
                 onPress={({nativeEvent}) =>
                   showData(nativeEvent.payload.properties)
                 }
-                shape={myVehiculesGeoJson}>
+                shape={vehiculesGeoJson}>
                 <MapboxGL.SymbolLayer
                   id="myTrams"
                   filter={['==', ['get', 'mode'], 'T']}
@@ -229,7 +219,7 @@ const MapBox = ({...props}) => {
                 onPress={({nativeEvent}) =>
                   showData(nativeEvent.payload.properties)
                 }
-                shape={myVehiculesGeoJson}>
+                shape={vehiculesGeoJson}>
                 <MapboxGL.SymbolLayer
                   aboveLayerID={'myTrams'}
                   id="myMetros"
@@ -243,7 +233,7 @@ const MapBox = ({...props}) => {
                 onPress={({nativeEvent}) =>
                   showData(nativeEvent.payload.properties)
                 }
-                shape={myVehiculesGeoJson}>
+                shape={vehiculesGeoJson}>
                 <MapboxGL.SymbolLayer
                   aboveLayerID={'myTrams'}
                   id="myBus"

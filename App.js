@@ -69,36 +69,22 @@ const changeBg = new Value(0);
 const progress = runTiming(clock, 0, 100);
 
 const App = () => {
+  //Modals
   const [modalVisible, setModalVisible] = useState(false);
   const [modalSettings, setModalSettings] = useState(false);
+
+  //Main Action Button
   const [mainPressed, setMainPressed] = useState(false);
+
+  //Lines+Stops
   const [allLines, setAllLines] = useState();
   const [myLines, setMyLines] = useState([]);
 
-  //Animation
+  //Animation Backgrounds
   const [lastBackground, setLastBackground] = useState('blue');
   const [background, setBackground] = useState('red');
-  // const backgroundRef = useRef(background);
-  // backgroundRef.current = background;
-  // const lastBackgroundRef = useRef(lastBackground);
-  // lastBackgroundRef.current = lastBackground;
 
-  useEffect(() => {
-    setBackground(
-      '#' +
-        Math.random()
-          .toString(16)
-          .slice(2, 8),
-    );
-    // updateAllVehicleGeoJson(myLinesRef.current);
-  }, [lastBackground]);
-
-  //Need this for setInterval
-  // const allLinesRef = useRef(allLines);
-  // allLinesRef.current = allLines;
-  // const myLinesRef = useRef(myLines);
-  // myLinesRef.current = myLines;
-
+  //GeoJson objects
   const [geoJson, setGeoJson] = useState({
     type: 'FeatureCollection',
     features: [],
@@ -121,9 +107,20 @@ const App = () => {
   const [showStopName, setShowStopName] = useState(false);
 
   useEffect(() => {
+    setBackground(
+      '#' +
+        Math.random()
+          .toString(16)
+          .slice(2, 8),
+    );
+    updateAllVehicleGeoJson(myLines);
+  }, [lastBackground]);
+
+  useEffect(() => {
     setAllLines(map.initLines(allStops));
   }, []);
 
+  // *** FUNCTIONS ** //
   const addLine = selectedLine => {
     if (
       !myLines.find(
@@ -193,25 +190,6 @@ const App = () => {
     });
   };
 
-  // const addVehiculesToGeoJson = features => {
-  //   setVehiculesGeoJson({
-  //     ...vehiculesGeoJson,
-  //     features,
-  //   });
-  // };
-
-  // const deleteStopsFromGeoJson = lineTodelete => {
-  //   setGeoJson({
-  //     ...geoJson,
-  //     features: [
-  //       ...geoJson.features.filter(
-  //         (feature, i) =>
-  //           geoJson.features.indexOf(line.line.shape.features[0]) !== i,
-  //       ),
-  //     ],
-  //   });
-  // };
-
   const updateAllVehicleGeoJson = async myLines => {
     let features = await map.updateAllVehicles();
     features.map((vehicle, i) => {
@@ -278,7 +256,7 @@ const App = () => {
           {() =>
             onChange(changeBg, [
               call([], ([]) => {
-                setLastBackground(backgroundRef.current);
+                setLastBackground(background);
               }),
             ])
           }

@@ -34,18 +34,6 @@ const mapFunctions = {
     };
   },
 
-  getVehicles: async stops => {
-    return new Promise((resolve, reject) => {
-      mapFunctions
-        .getLine(stops.join('%2C'))
-        .then(data => {
-          if (data) resolve(data);
-          //else reject ("error")
-        })
-        .catch(err => reject(err));
-    });
-  },
-
   getTerminalName: stopId => {
     return stops.features.find(stop => stop.properties.stop_id === stopId);
   },
@@ -107,44 +95,6 @@ const mapFunctions = {
       resolve(features);
     });
   },
-
-  // updateAllVehicles: async nroStops => {
-  //   let features = [];
-  //   return nroStops.map(async stop => {
-  //     return new Promise(async (resolve, reject) => {
-  //       let data = await mapFunctions.getVehicles(stop);
-  //       if (data.lines.length > 0) {
-  //         data.lines.map(line => {
-  //           line.vehiclePositions.map(vehicle => {
-  //             let stopsShape = mapFunctions.getStopFromVehiclePosition(vehicle);
-  //             stopsShape.map(stop => {
-  //               let linesShape = mapFunctions.getLineShape(stop);
-  //               if (linesShape) {
-  //                 let coordinates = mapFunctions.getPosition(
-  //                   mapFunctions.findStop(
-  //                     linesShape.geometry.coordinates,
-  //                     stop.geometry.coordinates,
-  //                     0.01,
-  //                   ),
-  //                   vehicle.distanceFromPoint,
-  //                 );
-  //                 coordinates
-  //                   ? features.push(
-  //                       mapFunctions.createVehicleFeature(
-  //                         [coordinates[0], coordinates[1]],
-  //                         stop,
-  //                       ),
-  //                     )
-  //                   : null;
-  //               }
-  //             });
-  //           });
-  //         });
-  //       }
-  //       if (features.length > 0) resolve(features);
-  //     });
-  //   });
-  // },
 
   createVehicleFeature: (coordinates, stop) => {
     return {
@@ -309,39 +259,6 @@ const mapFunctions = {
         } else {
           alert('Error fetching data');
           return 'Error';
-        }
-      })
-      .catch(err => console.log('Error API Response: ', err));
-  },
-
-  getLine: async line => {
-    // let getUrl =
-    //   'https://opendata-api.stib-mivb.be/OperationMonitoring/4.0/VehiclePositionByLine/' +
-    //   line;
-
-    //  return axios
-    //   .get(getUrl, {
-    //     headers: {
-    //       Accept: 'application/json',
-    //       Authorization: 'Bearer bd52af8f28411e9ea23d92151cc57bcd', //the token is a variable which holds the token
-    //     },
-    //   })
-
-    let getUrl = 'http://localhost:5000/getVehicules/' + line;
-
-    return axios
-      .get(getUrl, {
-        headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer bd52af8f28411e9ea23d92151cc57bcd', //the token is a variable which holds the token
-        },
-      })
-
-      .then(res => {
-        if (res.status === 200) {
-          return res.data;
-        } else {
-          return 'Error API Response not 200';
         }
       })
       .catch(err => console.log('Error API Response: ', err));
