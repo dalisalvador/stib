@@ -4,6 +4,7 @@ import {StyleSheet, View, Dimensions, Text} from 'react-native';
 import Geojson from 'react-native-geojson';
 import ModalAdd from './Components/Modal/ModalAdd';
 import ModalSettings from './Components/Modal/ModalSettings';
+import ModalAbout from './Components/Modal/ModalAbout';
 
 import {AllLinesProvider} from './allLinesContext';
 import map from './assets/map';
@@ -70,11 +71,9 @@ const progress = runTiming(clock, 0, 100);
 
 const App = () => {
   //Modals
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalLines, setModalLines] = useState(false);
   const [modalSettings, setModalSettings] = useState(false);
-
-  //Main Action Button
-  const [mainPressed, setMainPressed] = useState(false);
+  const [modalAbout, setModalAbout] = useState(false);
 
   //Lines+Stops
   const [allLines, setAllLines] = useState();
@@ -262,16 +261,16 @@ const App = () => {
           }
         </Animated.Code>
         <FloatingButton
-          mainPressed={mainPressed}
-          setMainPressed={setMainPressed}
-          setModalVisible={setModalVisible}
+          setModalLines={setModalLines}
           setModalSettings={setModalSettings}
+          setModalAbout={setModalAbout}
         />
-        <ModalAdd visible={modalVisible} setModalVisible={setModalVisible} />
+        <ModalAdd visible={modalLines} setModalVisible={setModalLines} />
         <ModalSettings
           modalSettings={modalSettings}
           setModalSettings={setModalSettings}
         />
+        <ModalAbout visible={modalAbout} setModalVisible={setModalAbout} />
         <Toast position="bottom" ref={toast} />
       </Fragment>
     </AllLinesProvider>

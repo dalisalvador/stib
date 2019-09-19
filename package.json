@@ -15,7 +15,7 @@
     "react-native": "0.60.5",
     "react-native-easy-toast": "^1.2.0",
     "react-native-elements": "^1.1.0",
-    "react-native-floating-action": "^1.18.0",
+    "react-native-floating-action": "github:dalisalvador/react-native-floating-action",
     "react-native-geojson": "^0.1.1",
     "react-native-gesture-handler": "^1.4.1",
     "react-native-keyboard-aware-scroll-view": "^0.9.1",
