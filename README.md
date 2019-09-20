@@ -4,7 +4,7 @@
 <h1 id="p-aligncenterstibtrack-p"><p align="center">StibTrack </p></h1>
 <p><strong>StibTrack</strong> provides reliable <strong>real-time tracking</strong> information obtained directly from <em>STIB-MIVB public API</em>. You’ll find any STIB-MIVB vehicle real-time position on the map as well as stops, lines road, and more!.</p>
 <p><img src="https://image.flaticon.com/icons/svg/197/197583.svg" alt="Markdown Monster icon" width="20px" height="15px">          <strong>ONLY FOR <em>BRUSSELS</em></strong>   <img src="https://image.flaticon.com/icons/svg/197/197583.svg" alt="Markdown Monster icon" width="20px" height="15px"></p>
-<p>Most available mobile apps provide only the <strong>schedule</strong> of any given line (<em>potential arrival/departure</em>), so you can only <strong>guess</strong> where <strong>exactly you transport is</strong>. But if you are an every-day user of STIB-MIVB transportation system, you might want to have the possibility to check where your next ride is, and be a little bit ahead of time.</p>
+<p>Most available mobile apps provide only the <strong>schedule</strong> for a given line (<em>potential arrival/departure</em>), so you can only <strong>guess</strong> where <strong>exactly you transport is</strong>. But if you are an every-day user of STIB-MIVB transportation system, you might want to have the possibility to check where your next ride is, and be a little bit ahead of time.</p>
 <p><strong>This is an open-source project</strong>, so if you want to dig a little bit in the code, please check the source code. Also please keep in mind that you might encounter bugs, strange issues, broken things, and if you do, please let me know, <em>or just do a PR</em>  😃 !<br>
 <br></p>
 <blockquote>
@@ -55,4 +55,3 @@ cd stib
 </tbody>
 </table><h2 id="license">License</h2>
 <p>StibTrack is licensed under <a href="LICENSE">The MIT License</a>.</p>
-

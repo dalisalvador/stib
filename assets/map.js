@@ -257,7 +257,7 @@ const mapFunctions = {
         if (res.data.success) {
           return res.data.msg;
         } else {
-          alert('Error fetching data');
+          alert('Error fetching data. Internet connection ok?');
           return 'Error';
         }
       })

@@ -31,6 +31,7 @@ target 'stib' do
 
   pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
 
+
   target 'stibTests' do
     inherit! :search_paths
     # Pods for testing
