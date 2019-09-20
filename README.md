@@ -1,8 +1,3 @@
----
-
-
----
-
 <p align="center">
   <img src="https://image.flaticon.com/icons/svg/1646/1646720.svg" alt="Markdown Monster icon" width="300px" height="300px">
 </p>
