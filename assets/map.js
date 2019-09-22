@@ -64,7 +64,7 @@ const mapFunctions = {
     return new Promise(async (resolve, reject) => {
       let features = [];
       let lines = await mapFunctions.getLines();
-      if (lines.length > 0) {
+      if (lines) {
         lines.map(line => {
           line.vehiclePositions.map(vehicle => {
             let stopsShape = mapFunctions.getStopFromVehiclePosition(vehicle);
@@ -91,8 +91,9 @@ const mapFunctions = {
             });
           });
         });
+        resolve(features);
       }
-      resolve(features);
+      resolve(false);
     });
   },
 
@@ -256,7 +257,7 @@ const mapFunctions = {
       .then(res => {
         if (res.data.success) {
           return res.data.msg;
-        }
+        } else return false;
         // else {
         //   alert('Error fetching data. Internet connection ok?');
         //   return 'Error';

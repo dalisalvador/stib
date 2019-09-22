@@ -77,7 +77,7 @@ const progress = runTiming(clock, 0, 100);
 
 const App = () => {
   //Init
-  const [initDone, setInitDone] = useState(false);
+  const [initDone, setInitDone] = useState();
 
   //First Time User Slides
   const [showSlides, setShowSlides] = useState();
@@ -115,22 +115,23 @@ const App = () => {
     features: [],
   });
 
-  const [nothingReceived, setNothingReceived] = useState();
   const toast = useRef(null);
 
   //Settings
   const [allVehicles, setAllVehicles] = useState();
   const [showStopName, setShowStopName] = useState();
   const [showBus, setShowBus] = useState(true);
-  const [showMetro, setShowMetro] = useState(true);
   const [showTram, setShowTram] = useState(true);
+  const [showMetro, setShowMetro] = useState(true);
 
   useEffect(() => {
     if (initDone) {
-      SplashScreen.hide();
-      console.log({allVehicles});
-      console.log({showStopName});
-      console.log({showSlides});
+      startDelay(5).then(() => {
+        SplashScreen.hide();
+        console.log({allVehicles});
+        console.log({showStopName});
+        console.log({showSlides});
+      });
     }
   }, [initDone]);
 
@@ -152,14 +153,18 @@ const App = () => {
     );
   }, [vehiculesGeoJson]);
 
-  useEffect(() => {}, [nothingReceived]);
-
   useEffect(() => {
     getStoredData();
     setAllLines(map.initLines(allStops));
   }, []);
 
   // *** FUNCTIONS ** //
+
+  const startDelay = async seconds => {
+    return new Promise(resolve => {
+      setTimeout(resolve, seconds * 1000);
+    });
+  };
 
   const getStoredData = async () => {
     let storageData = {
@@ -281,22 +286,28 @@ const App = () => {
 
   const updateAllVehicleGeoJson = async myLines => {
     let features = await map.updateAllVehicles();
-    features.map((vehicle, i) => {
-      myLines.map(line => {
-        if (
-          vehicle.properties.numero_lig === line.selection.nroStop &&
-          vehicle.properties.variante === line.selection.variantStop &&
-          vehicle.properties.mode === line.selection.mode[0]
-        ) {
-          features[i].properties.myLine = 1;
-        }
+    if (features) {
+      features.map((vehicle, i) => {
+        myLines.map(line => {
+          if (
+            vehicle.properties.numero_lig === line.selection.nroStop &&
+            vehicle.properties.variante === line.selection.variantStop &&
+            vehicle.properties.mode === line.selection.mode[0]
+          ) {
+            features[i].properties.myLine = 1;
+          }
+        });
       });
-    });
 
-    setVehiculesGeoJson({
-      ...vehiculesGeoJson,
-      features,
-    });
+      setVehiculesGeoJson({
+        ...vehiculesGeoJson,
+        features,
+      });
+    } //nothing returned from server. Update geoJson with old values
+    else
+      setVehiculesGeoJson({
+        ...vehiculesGeoJson,
+      });
   };
 
   const deleteLineFromGeoJson = line => {
@@ -362,6 +373,7 @@ const App = () => {
           ])
         }
       </Animated.Code>
+
       <FloatingButton
         setModalLines={setModalLines}
         setModalSettings={setModalSettings}

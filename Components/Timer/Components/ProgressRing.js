@@ -10,6 +10,7 @@ YellowBox.ignoreWarnings([
   'Warning: componentWillMount is deprecated',
   'Warning: componentWillReceiveProps is deprecated',
   'Warning: componentWillUpdate is deprecated',
+  'Sending `onReanimatedPropsChange` with no listeners registered.',
 ]);
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
