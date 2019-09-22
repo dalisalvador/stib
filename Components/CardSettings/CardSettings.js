@@ -12,6 +12,12 @@ const CardSettings = ({...props}) => {
     setAllVehicles,
     showStopName,
     setShowStopName,
+    showBus,
+    showMetro,
+    showTram,
+    setShowBus,
+    setShowMetro,
+    setShowTram,
   } = useContext(AllLinesContext);
 
   return (
@@ -29,6 +35,21 @@ const CardSettings = ({...props}) => {
           value={showStopName}
           toggle={setShowStopName}
           instruction={'Show stop name'}
+        />
+        <CustomRadio
+          value={showBus}
+          toggle={setShowBus}
+          instruction={'Show Bus'}
+        />
+        <CustomRadio
+          value={showMetro}
+          toggle={setShowMetro}
+          instruction={'Show Metro'}
+        />
+        <CustomRadio
+          value={showTram}
+          toggle={setShowTram}
+          instruction={'Show Tram'}
         />
       </View>
       <View style={styles.button}>

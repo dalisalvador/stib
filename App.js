@@ -79,9 +79,6 @@ const App = () => {
   //Init
   const [initDone, setInitDone] = useState(false);
 
-  //Loading
-  const [loadingScreen, setLoadingScreen] = useState(true);
-
   //First Time User Slides
   const [showSlides, setShowSlides] = useState();
 
@@ -118,11 +115,15 @@ const App = () => {
     features: [],
   });
 
+  const [nothingReceived, setNothingReceived] = useState();
   const toast = useRef(null);
 
   //Settings
   const [allVehicles, setAllVehicles] = useState();
   const [showStopName, setShowStopName] = useState();
+  const [showBus, setShowBus] = useState(true);
+  const [showMetro, setShowMetro] = useState(true);
+  const [showTram, setShowTram] = useState(true);
 
   useEffect(() => {
     if (initDone) {
@@ -138,7 +139,7 @@ const App = () => {
   }, [allVehicles, showStopName]);
 
   useEffect(() => {
-    //updateAllVehicleGeoJson(myLines);
+    updateAllVehicleGeoJson(myLines);
   }, [lastBackground]);
 
   useEffect(() => {
@@ -150,6 +151,8 @@ const App = () => {
           .slice(2, 8),
     );
   }, [vehiculesGeoJson]);
+
+  useEffect(() => {}, [nothingReceived]);
 
   useEffect(() => {
     getStoredData();
@@ -325,16 +328,22 @@ const App = () => {
         setAllVehicles,
         showStopName,
         setShowStopName,
+        showBus,
+        showMetro,
+        showTram,
+        setShowBus,
+        setShowMetro,
+        setShowTram,
       }}>
       <View style={styles.container}>
-        {/* <MapBox
+        <MapBox
           myLines={myLines}
           geoJson={geoJson}
           vehiculesGeoJson={vehiculesGeoJson}
           myVehiculesGeoJson={myVehiculesGeoJson}
           allStops={allStops}
           mapFunctions={map}
-        /> */}
+        />
       </View>
       <Timer
         progress={progress}

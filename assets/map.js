@@ -256,10 +256,11 @@ const mapFunctions = {
       .then(res => {
         if (res.data.success) {
           return res.data.msg;
-        } else {
-          alert('Error fetching data. Internet connection ok?');
-          return 'Error';
         }
+        // else {
+        //   alert('Error fetching data. Internet connection ok?');
+        //   return 'Error';
+        // }
       })
       .catch(err => console.log('Error API Response: ', err));
   },
