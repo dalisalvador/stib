@@ -82,7 +82,7 @@ const App = () => {
   const [initDone, setInitDone] = useState();
 
   //First Time User Slides
-  const [showSlides, setShowSlides] = useState();
+  const [showSlides, setShowSlides] = useState(false);
 
   //Modals
   const [modalLines, setModalLines] = useState(false);
@@ -120,8 +120,8 @@ const App = () => {
   const toast = useRef(null);
 
   //Settings
-  const [allVehicles, setAllVehicles] = useState();
-  const [showStopName, setShowStopName] = useState();
+  const [allVehicles, setAllVehicles] = useState(false);
+  const [showStopName, setShowStopName] = useState(true);
   const [showBus, setShowBus] = useState(true);
   const [showTram, setShowTram] = useState(true);
   const [showMetro, setShowMetro] = useState(true);
@@ -130,16 +130,13 @@ const App = () => {
     if (initDone) {
       startDelay(2).then(() => {
         SplashScreen.hide();
-        console.log({allVehicles});
-        console.log({showStopName});
-        console.log({showSlides});
       });
     }
   }, [initDone]);
 
   useEffect(() => {
-    storeSettingsData();
-  }, [allVehicles, showStopName]);
+    if (initDone) storeSettingsData();
+  }, [allVehicles, showStopName, showBus, showTram, showMetro, showSlides]);
 
   useEffect(() => {
     //updateAllVehicleGeoJson(myLines);
@@ -163,7 +160,8 @@ const App = () => {
   // *** FUNCTIONS ** //
 
   const resetSettings = () => {
-    alert('Reset Settigns to factory');
+    setModalSettings(false);
+    storeSettingsData(true);
   };
 
   const startDelay = async seconds => {
@@ -178,24 +176,16 @@ const App = () => {
       myLines: '',
     };
     try {
-      let slideShowed = await AsyncStorage.getItem('slideShowed');
-      if (slideShowed === null) setShowSlides(true);
-      else setShowSlides(false);
-      //Dev
-      setShowSlides(false);
-
       storageData.settings = await AsyncStorage.getItem('settings');
       if (storageData.settings !== null) {
-        storageData.settings.allVehicles
-          ? setAllVehicles(storageData.settings.allVehicles)
-          : setAllVehicles(false);
-        storageData.settings.showStopName
-          ? setShowStopName(storageData.settings.showStopName)
-          : setShowStopName(false);
-      } else {
-        setAllVehicles(false);
-        setShowStopName(false);
-      }
+        storageData.settings = JSON.parse(storageData.settings);
+        setShowSlides(!storageData.settings.slidesShowed);
+        setAllVehicles(storageData.settings.allVehicles);
+        setShowStopName(storageData.settings.showStopName);
+        setShowBus(storageData.settings.showBus);
+        setShowMetro(storageData.settings.showMetro);
+        setShowTram(storageData.settings.showTram);
+      } else console.log('Settings storage null!');
 
       storageData.myLines = await AsyncStorage.getItem('myLines');
     } catch (error) {
@@ -207,13 +197,24 @@ const App = () => {
     setInitDone(true);
   };
 
-  const storeSettingsData = async () => {
-    let settings = {
-      allVehicles,
-      showStopName,
-    };
+  const storeSettingsData = async defaultValues => {
+    let settings = {};
+    if (defaultValues) {
+      settings.allVehicles = false;
+      settings.showStopName = true;
+      settings.showBus = true;
+      settings.showTram = true;
+      settings.showMetro = true;
+      settings.slidesShowed = false;
+    } else {
+      settings.allVehicles = allVehicles;
+      settings.showStopName = showStopName;
+      settings.showBus = showBus;
+      settings.showTram = showTram;
+      settings.showMetro = showBus;
+      settings.slidesShowed = !showSlides;
+    }
     await AsyncStorage.setItem('settings', JSON.stringify(settings));
-    AsyncStorage.getItem('settings').then(x => console.log(x));
   };
 
   const storeMyLinesData = () => {
@@ -330,8 +331,9 @@ const App = () => {
     });
   };
 
-  console.log(showSlides);
-  return showSlides ? (
+  return !initDone ? (
+    <View />
+  ) : showSlides ? (
     <IntroSlides setShowSlides={setShowSlides} />
   ) : (
     <AllLinesProvider
