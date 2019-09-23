@@ -82,7 +82,7 @@ const App = () => {
   const [initDone, setInitDone] = useState();
 
   //First Time User Slides
-  const [showSlides, setShowSlides] = useState(true);
+  const [showSlides, setShowSlides] = useState();
 
   //Modals
   const [modalLines, setModalLines] = useState(false);
@@ -162,6 +162,10 @@ const App = () => {
 
   // *** FUNCTIONS ** //
 
+  const resetSettings = () => {
+    alert('Reset Settigns to factory');
+  };
+
   const startDelay = async seconds => {
     return new Promise(resolve => {
       setTimeout(resolve, seconds * 1000);
@@ -178,7 +182,7 @@ const App = () => {
       if (slideShowed === null) setShowSlides(true);
       else setShowSlides(false);
       //Dev
-      setShowSlides(true);
+      setShowSlides(false);
 
       storageData.settings = await AsyncStorage.getItem('settings');
       if (storageData.settings !== null) {
@@ -346,6 +350,7 @@ const App = () => {
         setShowBus,
         setShowMetro,
         setShowTram,
+        resetSettings,
       }}>
       <View style={styles.container}>
         {/* <MapBox
