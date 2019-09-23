@@ -20,6 +20,8 @@ import Timer from './Components/Timer/Timer';
 import Animated, {Easing} from 'react-native-reanimated';
 import FloatingButton from './Components/FloatingButton/FloatingButton';
 
+import IntroSlides from './Components/IntroSlides/IntroSlides';
+
 const {
   Clock,
   Value,
@@ -80,7 +82,7 @@ const App = () => {
   const [initDone, setInitDone] = useState();
 
   //First Time User Slides
-  const [showSlides, setShowSlides] = useState();
+  const [showSlides, setShowSlides] = useState(true);
 
   //Modals
   const [modalLines, setModalLines] = useState(false);
@@ -126,7 +128,7 @@ const App = () => {
 
   useEffect(() => {
     if (initDone) {
-      startDelay(5).then(() => {
+      startDelay(2).then(() => {
         SplashScreen.hide();
         console.log({allVehicles});
         console.log({showStopName});
@@ -140,7 +142,7 @@ const App = () => {
   }, [allVehicles, showStopName]);
 
   useEffect(() => {
-    updateAllVehicleGeoJson(myLines);
+    //updateAllVehicleGeoJson(myLines);
   }, [lastBackground]);
 
   useEffect(() => {
@@ -176,7 +178,7 @@ const App = () => {
       if (slideShowed === null) setShowSlides(true);
       else setShowSlides(false);
       //Dev
-      setShowSlides(false);
+      setShowSlides(true);
 
       storageData.settings = await AsyncStorage.getItem('settings');
       if (storageData.settings !== null) {
@@ -324,10 +326,9 @@ const App = () => {
     });
   };
 
+  console.log(showSlides);
   return showSlides ? (
-    <View>
-      <Text>First time</Text>
-    </View>
+    <IntroSlides setShowSlides={setShowSlides} />
   ) : (
     <AllLinesProvider
       value={{
@@ -347,14 +348,14 @@ const App = () => {
         setShowTram,
       }}>
       <View style={styles.container}>
-        <MapBox
+        {/* <MapBox
           myLines={myLines}
           geoJson={geoJson}
           vehiculesGeoJson={vehiculesGeoJson}
           myVehiculesGeoJson={myVehiculesGeoJson}
           allStops={allStops}
           mapFunctions={map}
-        />
+        /> */}
       </View>
       <Timer
         progress={progress}
