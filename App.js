@@ -139,6 +139,13 @@ const App = () => {
   }, [allVehicles, showStopName, showBus, showTram, showMetro, showSlides]);
 
   useEffect(() => {
+    if (initDone) {
+      console.log('storing mylines');
+      storeMyLinesData();
+    }
+  }, [myLines]);
+
+  useEffect(() => {
     //updateAllVehicleGeoJson(myLines);
   }, [lastBackground]);
 
@@ -188,12 +195,22 @@ const App = () => {
       } else console.log('Settings storage null!');
 
       storageData.myLines = await AsyncStorage.getItem('myLines');
+      if (storageData.myLines !== null) {
+        storageData.myLines = JSON.parse(storageData.myLines);
+        let sotredLines = [];
+        storageData.myLines.map(line => {
+          map.addToMyLines(line).then(response => {
+            sotredLines.push(response.newLine);
+            addLineToGeoJson(response.newLine);
+            editVehiclesGeoJson(line, 'add');
+          });
+        });
+        setMyLines(sotredLines);
+      }
     } catch (error) {
       // Error retrieving data
       console.log(error.message);
     }
-    if (storageData.myLines !== null) console.log(storageData.myLines);
-
     setInitDone(true);
   };
 
@@ -217,14 +234,10 @@ const App = () => {
     await AsyncStorage.setItem('settings', JSON.stringify(settings));
   };
 
-  const storeMyLinesData = () => {
-    let myLines = [
-      {
-        name: 'Line Name',
-        direction: 'Line Direction',
-      },
-    ];
-    AsyncStorage.setItem('lines', myLines);
+  const storeMyLinesData = async () => {
+    let myLinesData = [];
+    myLines.map(line => myLinesData.push(line.selection));
+    await AsyncStorage.setItem('myLines', JSON.stringify(myLinesData));
   };
 
   const addLine = selectedLine => {
