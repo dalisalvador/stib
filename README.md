@@ -1,3 +1,8 @@
+---
+
+
+---
+
 <p align="center">
   <img src="https://image.flaticon.com/icons/svg/1646/1646720.svg" alt="Markdown Monster icon" width="300px" height="300px">
 </p>
@@ -19,6 +24,10 @@
 <p align="center">
   <img src="https://www.workinlogistics.be/uploads/public/company/logos/58aef3b03a924.png" alt="Markdown Monster icon" width="170px" height="70px"></p>
 <h2 id="the-app">The App</h2>
+<h2 id="considerations">Technical Considerations</h2>
+1.	There is also a serve running  (<a href="https://github.com/dalisalvador/stibserver">stibServer</a> ) which has been deployed in Heroku. The main goal of this is to handle several users due to API limitations.<br>
+2. According to <a href="https://opendata.stib-mivb.be/store/data">STIB-MIVB</a> : "<i>A vehicle position has a lifetime of about 20 seconds, therefore it is not necessary to poll the service at a higher frequency</i>". That's why, in the app,  the position is refreshed every 15 seconds. (check the circular progress animation)<br>
+3. The app has been tested only in both Android and iOS emulators, but only in an iOS <b>real</b>.  
 <h2 id="installation">Installation</h2>
 <p>1-First clone it!</p>
 <pre><code>git clone https://github.com/dalisalvador/stib.git
@@ -37,7 +46,6 @@ cd stib
 <p>Since this is <em>React &gt; 0.60</em> for <strong>Android</strong> users the linking is done automatically, for <strong>iOS</strong> I recommend <a href="http://cocoapods.org/">CocoaPods</a></p>
 </blockquote>
 <h2 id="version">Version</h2>
-
 <table>
 <thead>
 <tr>
@@ -55,3 +63,4 @@ cd stib
 </tbody>
 </table><h2 id="license">License</h2>
 <p>StibTrack is licensed under <a href="LICENSE">The MIT License</a>.</p>
+
