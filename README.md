@@ -25,14 +25,14 @@ Add All Vehicules from Stib and Select Line
 Add All Vehicles and Select Line
 </p>
 <p align="center">
-<img src="https://im3.ezgif.com/tmp/ezgif-3-3288b956b6cc.gif" width="250" height="500" />
+<img src="./assets/img/stib1.gif" width="250" height="500" />
 </p>
 
 <p align="center">
 Add Line by Searching
 </p>
 <p align="center">
-<img src="https://im3.ezgif.com/tmp/ezgif-3-3288b956b6cc.gif" width="250" height="500" />
+<img src="./assets/img/stib2.gif" width="250" height="500" />
 </p>
 
 
