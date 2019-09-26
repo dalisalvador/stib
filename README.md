@@ -18,9 +18,24 @@
  <img src="https://github.githubassets.com/images/icons/emoji/unicode/2764.png" alt="Markdown Monster icon">
  </p>
 <p align="center">
+Add All Vehicules from Stib and Select Line
   <img src="https://www.workinlogistics.be/uploads/public/company/logos/58aef3b03a924.png" alt="Markdown Monster icon" width="170px" height="70px"></p>
 <h2 id="the-app">The App</h2>
-![app](https://im3.ezgif.com/tmp/ezgif-3-3288b956b6cc.gif)
+<p align="center">
+Add All Vehicles and Select Line
+</p>
+<p align="center">
+<img src="https://im3.ezgif.com/tmp/ezgif-3-3288b956b6cc.gif" width="250" height="500" />
+</p>
+
+<p align="center">
+Add Line by Searching
+</p>
+<p align="center">
+<img src="https://im3.ezgif.com/tmp/ezgif-3-3288b956b6cc.gif" width="250" height="500" />
+</p>
+
+
 <h2 id="considerations">Technical Considerations</h2>
 1.	There is also a serve running  (<a href="https://github.com/dalisalvador/stibserver">stibServer</a> ) which has been deployed in Heroku. The main goal of this is to handle several users due to API limitations.<br>
 2. According to <a href="https://opendata.stib-mivb.be/store/data">STIB-MIVB</a> : "<i>A vehicle position has a lifetime of about 20 seconds, therefore it is not necessary to poll the service at a higher frequency</i>". That's why, in the app,  the position is refreshed every 15 seconds. (check the circular progress animation)<br>
