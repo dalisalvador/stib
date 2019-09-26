@@ -18,7 +18,6 @@
  <img src="https://github.githubassets.com/images/icons/emoji/unicode/2764.png" alt="Markdown Monster icon">
  </p>
 <p align="center">
-Add All Vehicules from Stib and Select Line
   <img src="https://www.workinlogistics.be/uploads/public/company/logos/58aef3b03a924.png" alt="Markdown Monster icon" width="170px" height="70px"></p>
 <h2 id="the-app">The App</h2>
 <p align="center">
