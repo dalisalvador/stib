@@ -1,5 +1,5 @@
 import React, {Fragment, useState, useEffect, useRef} from 'react';
-import {StyleSheet, View, Dimensions, Text} from 'react-native';
+import {StyleSheet, View, Dimensions, Text, Button} from 'react-native';
 
 import SplashScreen from 'react-native-splash-screen';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -126,6 +126,8 @@ const App = () => {
   const [showTram, setShowTram] = useState(true);
   const [showMetro, setShowMetro] = useState(true);
 
+  const [pause, setPause] = useState(false);
+
   useEffect(() => {
     if (initDone) {
       startDelay(2).then(() => {
@@ -146,7 +148,7 @@ const App = () => {
   }, [myLines]);
 
   useEffect(() => {
-    //updateAllVehicleGeoJson(myLines);
+    updateAllVehicleGeoJson(myLines);
   }, [lastBackground]);
 
   useEffect(() => {
@@ -165,7 +167,6 @@ const App = () => {
   }, []);
 
   // *** FUNCTIONS ** //
-
   const resetSettings = () => {
     setModalSettings(false);
     storeSettingsData(true);
@@ -368,15 +369,16 @@ const App = () => {
         resetSettings,
       }}>
       <View style={styles.container}>
-        {/* <MapBox
+        <MapBox
           myLines={myLines}
           geoJson={geoJson}
           vehiculesGeoJson={vehiculesGeoJson}
           myVehiculesGeoJson={myVehiculesGeoJson}
           allStops={allStops}
           mapFunctions={map}
-        /> */}
+        />
       </View>
+      <Button title="Stop/Start" onPress={() => setPause(!pause)} />
       <Timer
         progress={progress}
         background={backgroundRef.current}
