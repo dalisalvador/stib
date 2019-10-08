@@ -36,9 +36,10 @@ Add Line by Searching
 
 
 <h2 id="considerations">Technical Considerations</h2>
-1.	There is also a serve running  (<a href="https://github.com/dalisalvador/stibserver">stibServer</a> ) which has been deployed in Heroku. The main goal of this is to handle several users due to API limitations.<br>
+1.	There is also a server running  (<a href="https://github.com/dalisalvador/stibserver">stibServer</a> ) which has been deployed in Heroku. The main goal of this is to handle several users due to API limitations.<br>
 2. According to <a href="https://opendata.stib-mivb.be/store/data">STIB-MIVB</a> : "<i>A vehicle position has a lifetime of about 20 seconds, therefore it is not necessary to poll the service at a higher frequency</i>". That's why, in the app,  the position is refreshed every 15 seconds. (check the circular progress animation)<br>
-3. The app has been tested only in both Android and iOS emulators, but only in an iOS <b>real</b>.  
+3. The app has been tested in both Android and iOS emulators, but only in an iOS <b>real</b>.  
+4. Since <a href="https://github.com/dalisalvador/stibserver">stibServer</a> has been deployed in a free Heroku service, it normally takes 10 seconds to "wake-up", therefore the first position fetch might be a little bit delayed.
 <h2 id="installation">Installation</h2>
 <p>1-First clone it!</p>
 <pre><code>git clone https://github.com/dalisalvador/stib.git
