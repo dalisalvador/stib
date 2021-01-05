@@ -11,7 +11,7 @@
     "@react-native-community/async-storage": "github:react-native-community/async-storage",
     "@react-native-mapbox-gl/maps": "^7.0.1",
     "@turf/turf": "^5.1.6",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "jetifier": "^1.6.4",
     "react": "16.8.6",
     "react-native": "0.60.5",
